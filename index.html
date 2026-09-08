@@ -1,27 +1,54 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="FINTECH 535 options data project. Work in progress.">
-    <title>FINTECH 535 | Options Data</title>
-    <style>
-      * { box-sizing: border-box; }
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 2rem; background: #101a2b; color: #eef3fb; font-family: system-ui, sans-serif; }
-      main { width: 100%; max-width: 44rem; border-top: 3px solid #59d6c7; padding-top: 2rem; }
-      .course { color: #59d6c7; font-size: 1rem; letter-spacing: .12em; }
-      h1 { font-size: clamp(2.4rem, 7vw, 4rem); line-height: 1.1; margin: 1rem 0; }
-      p { font-size: 1.125rem; line-height: 1.7; color: #c2cddd; }
-      .status { display: inline-block; margin-top: 1.5rem; padding: .5rem 1rem; border: 1px solid #64748b; border-radius: 2rem; font-size: 1rem; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <div class="course">FINTECH 535</div>
-      <h1>Options Data</h1>
-      <p>Historical options prices, quoted midpoints, and trading activity.</p>
-      <p>This project is under development. Interactive charts and data analysis will be added here.</p>
-      <span class="status">Work in progress</span>
-    </main>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FINTECH 535 Assignment 1: historical UUUU option midpoints, trades, and missing data.">
+  <title>FINTECH 535 · Options Data</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<main>
+  <h1>UUUU Options Data</h1>
+  <p class="subtitle">FINTECH 535 · Assignment 1</p>
+  <p id="status" role="status">Loading LSEG data…</p>
+  <noscript>JavaScript is required to display the chart.</noscript>
+
+  <section class="controls" aria-label="Chart settings">
+    <label>As-of date <select id="date" disabled></select></label>
+    <label>Option type <select id="type" disabled><option value="Call">Calls</option><option value="Put">Puts</option></select></label>
+    <span id="spot"></span>
+  </section>
+
+  <section class="statistics" aria-label="Daily statistics">
+    <p><b>Midpoint with no trade (sample estimate):</b> <strong id="midOnly">—</strong> <span id="midDetail"></span></p>
+    <p><b>Median |MID_PRICE − TRDPRC_1|:</b> <strong id="difference">—</strong> <span id="bothDetail"></span></p>
+  </section>
+  <p id="denominator" class="note">Denominator: sampled contracts observed on or before this date and not yet expired; exact historical listing counts are unavailable.</p>
+
+  <p class="chart-help">MID_PRICE = closing bid–ask midpoint · TRDPRC_1 = last trade<br>Drag to rotate the 3D chart; hover over a point for its contract and price.</p>
+  <div id="cloud" aria-label="Three-dimensional option price chart"></div>
+  <p id="cloudEmpty" hidden>No prices are available for this selection.</p>
+
+  <section class="explanation" aria-label="Three observations">
+    <h2>What the data shows</h2>
+    <p id="sentence1"></p>
+    <p>Interpolating across empty cells on UUUU’s $0.50 strike grid can invent prices where no quote or trade was observed, because closely spaced strikes do not guarantee liquidity.</p>
+    <p>Next week I will use MID_PRICE as the closing mark, while remembering quotes may be stale, and TRDPRC_1 as evidence of a reported trade rather than a closing mark.</p>
+  </section>
+
+  <details>
+    <summary>Data notes</summary>
+    <p id="provenance"></p>
+    <p>Missing values stay missing; there is no interpolation or forward filling, and zero remains a valid price. The median uses only contracts with both prices on the selected date; no matched pairs produces N/A.</p>
+    <p>The denominator includes contracts from their first returned price through expiry, even on later days with neither field. It can miss listings before their first observation or contracts that returned no data; it is not a verified count of all listed series.</p>
+    <p>This is a sample of Friday expirations and strikes within UUUU’s high/low range, not the full options market. Empty or failed identifiers do not prove a contract never existed. Daily last-trade values cannot establish an intraday fill.</p>
+    <p>Python reads the local LSEG pickle and exports this website’s data snapshot. The browser does not need a live LSEG connection.</p>
+    <p>The expired RIC suffix uses A–L for both calls and puts, correcting the starter’s put suffix: <a href="https://community.developers.lseg.com/discussion/110410/expired-option-data-no-reponse">LSEG explanation</a>.</p>
+    <p><a href="options_long.csv" download>Download long table (CSV)</a> · <a href="https://github.com/davidp0717/fintech535">GitHub repository</a></p>
+  </details>
+</main>
+</body>
 </html>
