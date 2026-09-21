@@ -1,0 +1,11 @@
+week,expiry,strike,ric,status,reason,outcome
+2026-07-13,2026-07-17,320.0,AAPLG172632000.U^G26,Entered,Both prices available and Reg T initial margin satisfied,Assigned
+2026-07-20,2026-07-24,327.5,AAPLG242632750.U^G26,Entered,Both prices available and Reg T initial margin satisfied,Assigned
+2026-07-27,2026-07-31,340.0,AAPLG312634000.U^G26,Entered,Both prices available and Reg T initial margin satisfied,Expired
+2026-08-03,2026-08-07,307.5,AAPLH072630750.U^H26,Entered,Both prices available and Reg T initial margin satisfied,Assigned
+2026-08-10,2026-08-14,307.5,AAPLH142630750.U^H26,Entered,Both prices available and Reg T initial margin satisfied,Expired
+2026-08-17,2026-08-21,305.0,AAPLH212630500.U^H26,Entered,Both prices available and Reg T initial margin satisfied,Assigned
+2026-08-24,2026-08-28,315.0,AAPLH282631500.U^H26,Entered,Both prices available and Reg T initial margin satisfied,Assigned
+2026-08-31,2026-09-04,317.5,AAPLI042631750.U^I26,Entered,Both prices available and Reg T initial margin satisfied,Assigned
+2026-09-07,2026-09-11,,,Skipped,No Monday 11:00 stock bar (holiday or missing data),
+2026-09-14,2026-09-18,335.0,AAPLI182633500.U,Entered,Both prices available and Reg T initial margin satisfied,Assigned
