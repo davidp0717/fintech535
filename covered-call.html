@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AAPL covered-call backtest: simulated trades, position ledger, Reg T margin, and midpoint validation.">
+  <title>FINTECH 535 · Covered Call Backtest</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
+  <script src="assignment2/book.js" defer></script>
+  <script src="assignment2/view.js" defer></script>
+</head>
+<body>
+<main class="backtest">
+  <nav class="assignment-tabs" aria-label="Assignments"><a href="index.html">Assignment 1: Options Data</a><a href="covered-call.html" aria-current="page">Assignment 2: Covered Call</a></nav>
+  <h1>AAPL Covered Call Backtest</h1>
+  <p class="subtitle">FINTECH 535 · Assignment 2 · July 13–September 18, 2026</p>
+  <p>Historical LSEG data, simulated executions. Long 100 shares and short one weekly call.</p>
+  <p id="load-status" role="status">Loading saved results…</p>
+  <noscript>Enable JavaScript to view the saved results, charts, and tables.</noscript>
+
+  <section aria-labelledby="rules-title">
+    <h2 id="rules-title">Strategy rules</h2>
+    <ol>
+      <li><b>Monday at 11:00 a.m. New York time:</b> choose the lowest strike on a $2.50 grid at or above the same-bar AAPL stock print: K = ceil(S / 2.50) × 2.50. This is a fixed grid rule, not a claim to select the nearest strike on the entire exchange chain.</li>
+      <li><b>Open the covered call:</b> if flat, buy 100 shares at the stock print; sell one call expiring that Friday at a simulated limit fill of (BID + ASK) / 2, receiving 100 × premium. If shares remain from last week, sell only the call.</li>
+      <li><b>No valid same-bar bid/ask or insufficient initial margin:</b> skip both new legs. Keep any existing shares. A missing Monday session means skip that week, with no Tuesday catch-up.</li>
+      <li><b>Wait until Friday at 4:00 p.m.:</b> if the stock is above the strike, assign the call and deliver 100 shares at the strike, ending flat. Otherwise expire the call at zero and retain the shares; an exactly ATM call expires in this model. No rolls or buy-to-close.</li>
+    </ol>
+    <p class="note">Hourly bars are explicitly labeled at their end and displayed in New York time. A midpoint fill at the end of a bar is the assignment’s simulation assumption, not a claim that an actual limit order traded there.</p>
+  </section>
+
+  <section aria-labelledby="results-title">
+    <h2 id="results-title">Results</h2>
+    <div id="results" class="statistics"></div>
+    <p class="note">Starting cash: $40,000. One contract covers 100 shares. Results exclude commissions, slippage, dividends, interest, and taxes; they are not a total-return estimate. Early exercise is not simulated.</p>
+  </section>
+
+  <section aria-labelledby="nav-title">
+    <h2 id="nav-title">NAV and margin</h2>
+    <p>Hover for account values. Click a legend label to show or hide a line. All amounts are USD.</p>
+    <div id="nav-chart" class="backtest-chart" aria-label="NAV and Reg T margin history"></div>
+    <p id="margin-check"></p>
+    <details>
+      <summary>Account formulas</summary>
+      <ul>
+        <li>Stock market value (LMV) = shares × stock mark.</li>
+        <li>Option market value = −100 × call mark while short one call.</li>
+        <li>NAV = cash + stock market value + option market value.</li>
+        <li>Initial margin = 50% of LMV; the covered call adds $0.</li>
+        <li>Maintenance = 25% of LMV, using the assignment’s simplified Reg T framework.</li>
+        <li>Available funds = NAV − initial; excess equity = NAV − maintenance.</li>
+      </ul>
+      <p>We check initial margin on the proposed complete position before booking an entry. Negative available funds would block new risk; negative excess equity would flag a maintenance breach. Reg T makes these account checks explicit without requiring a broker-specific portfolio-margin model.</p>
+    </details>
+  </section>
+
+  <section aria-labelledby="scatter-title">
+    <h2 id="scatter-title">Midpoint versus last trade</h2>
+    <p>X = (BID + ASK) / 2; Y = TRDPRC_1. Calls must be within 5% of the stock price, with a valid quote and a reported trade in the same hourly bar.</p>
+    <p id="fit"></p>
+    <div id="scatter-chart" class="backtest-chart" aria-label="Option last trade versus midpoint with regression"></div>
+    <p>A high R² shows association, not guaranteed execution at the midpoint. Trade and quote times can differ within an hour, and a limit order can remain unfilled even when a midpoint is shown.</p>
+  </section>
+
+  <section aria-labelledby="blotter-title">
+    <h2 id="blotter-title">Trade blotter</h2>
+    <p>Booked simulated events only. Option limit/fill prices are per share; cash changes apply the 100-share multiplier. ASSIGN removes the call with zero option cash flow; the paired stock SELL records delivery at the strike.</p>
+    <p><a href="assignment2/blotter.csv" download>Download blotter CSV</a></p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="All booked trades"><table id="blotter"><caption>Every entry and exit</caption><thead><tr><th>Time (New York)</th><th>Instrument / OCC</th><th>Side</th><th>Qty</th><th>Limit</th><th>Fill</th><th>Cash Δ</th><th>Rule</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section aria-labelledby="ledger-title">
+    <h2 id="ledger-title">Position ledger</h2>
+    <p>Positions and account values after each hourly bar’s events. Cash changes only through the blotter. “Short calls” is a quantity; its market value is negative.</p>
+    <label class="ledger-control">Ledger rows <select id="ledger-frequency"><option value="daily">Last available bar each day</option><option value="all">Every hourly bar</option></select></label>
+    <p><a href="assignment2/ledger.csv" download>Download complete hourly ledger CSV</a></p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Position and margin ledger"><table id="ledger"><caption>Daily closing rows; full hourly records are available above</caption><thead><tr><th>Time (New York)</th><th>Shares</th><th>Short calls</th><th>Strike / expiry</th><th>Cash</th><th>Stock mark</th><th>Call mark</th><th>LMV</th><th>Option MV</th><th>NAV</th><th>Initial</th><th>Maintenance</th><th>Available</th><th>Excess</th><th>Quote age (h)</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section aria-labelledby="decisions-title">
+    <h2 id="decisions-title">Weekly decisions</h2>
+    <p>Skipped opportunities are kept here, separate from booked trades.</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Weekly entry decisions"><table id="decisions"><thead><tr><th>Monday</th><th>Expiry</th><th>Strike</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section aria-labelledby="analysis-title">
+    <h2 id="analysis-title">What happened and what I would change</h2>
+    <p id="outcomes"></p><p id="pnl-analysis"></p><p id="fit-analysis"></p>
+    <p><b>Strike choice:</b> AAPL was chosen for liquid weekly options. A fixed $2.50 grid makes the rule easy to reproduce and avoids changing strikes after seeing results. A strike just above spot balances premium against some upside, but repeatedly caps gains and leaves the stock’s downside exposure.</p>
+    <p><b>Where the assumption meets the data:</b> end-of-hour quotes and last trades are observed in matching bars, not necessarily at identical instants. No entry is filled from a prior quote. Missing valuation quotes would carry the latest known midpoint with its age disclosed; this changes the quality of the mark, not the execution rule.</p>
+    <p><b>Next changes:</b> test sale fills at the bid or midpoint minus a spread allowance, include commissions and dividends, model early assignment around ex-dividend dates, and compare several preselected strike rules on a separate out-of-sample period. The current result is a baseline, not an optimized strategy.</p>
+  </section>
+
+  <details>
+    <summary>Data and reproducibility</summary>
+    <p id="source"></p>
+    <p>For each eligible Monday we requested seven call strikes centered on the strategy strike, in $2.50 steps. The scatter uses every valid same-bar pair within 5% of spot from these candidates, not just the calls we sold. It is a sample of the chain, not every listed option.</p>
+    <p>LSEG required zero-padded expiry days for some calls. For recently expired contracts we also tried the unsuffixed identifier when the archived form returned no data. The blotter records the identifier that actually returned prices.</p>
+    <p><b>Data connection required</b> to refresh the local LSEG dataset. This published page only reads the saved results in <code>assignment2/book.js</code>; it never attempts a live Workspace connection.</p>
+    <p>The model excludes early assignment, dividends, costs, and financing; it assumes assignment only at Friday’s regular-session close. All expirations in this window are regular Fridays; September 7 has no Monday entry. Missing Friday settlement prints cause the backtest to stop rather than invent an exit.</p>
+    <p><a href="https://github.com/davidp0717/fintech535/tree/main/assignment2">Source code</a> · <a href="https://jakevestal.github.io/535_fintech/assignment.html">Assignment instructions</a></p>
+  </details>
+</main>
+</body>
+</html>

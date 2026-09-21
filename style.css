@@ -21,3 +21,19 @@ a { color: #194e73; }
 select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid #194e73; outline-offset: 3px; }
 [hidden] { display: none !important; }
 @media (max-width: 600px) { main { margin: 20px auto; padding: 0 14px; } .controls { gap: 12px; } #cloud { height: 420px; } .statistics span { display: block; } }
+
+/* Shared navigation keeps both assignments on the same site. */
+.assignment-tabs { display: flex; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid #ccc; margin: 0 0 24px; padding-bottom: 12px; }
+.assignment-tabs a { text-decoration: none; padding: 6px 0; }
+.assignment-tabs a[aria-current="page"] { font-weight: bold; border-bottom: 2px solid #194e73; }
+.backtest section { margin: 28px 0; }
+.backtest li { margin: 6px 0; }
+.backtest-chart { height: 390px; width: 100%; }
+.table-scroll { overflow: auto; max-height: 450px; border: 1px solid #ccc; }
+.backtest table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.backtest th, .backtest td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #ddd; white-space: nowrap; vertical-align: top; }
+.backtest th { background: #f1f4f6; position: sticky; top: 0; }
+.backtest td.note-cell { white-space: normal; min-width: 240px; }
+.backtest td small { display: block; font-size: 12px; color: #555; }
+.backtest caption { text-align: left; padding: 8px; color: #555; }
+.backtest .ledger-control { margin-top: 14px; }

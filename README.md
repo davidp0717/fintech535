@@ -1,4 +1,11 @@
-# FINTECH 535 — Assignment 1
+# FINTECH 535
+
+- [Assignment 1: Options Data](https://davidp0717.github.io/fintech535/)
+- [Assignment 2: Covered Call](https://davidp0717.github.io/fintech535/covered-call.html) — [code and instructions](assignment2/README.md)
+
+Both assignments share the navigation tabs and GitHub Pages site.
+
+## Assignment 1
 
 Live app: https://davidp0717.github.io/fintech535/
 
