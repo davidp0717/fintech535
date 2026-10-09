@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AAPL Poor Man's Covered Call: a reproducible 10 a.m. backtest with capital, performance, execution costs, and assignment risk.">
+  <title>FINTECH 535 · Poor Man’s Covered Call</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
+  <script src="assignment3/view.js" defer></script>
+</head>
+<body>
+<main class="backtest pmcc">
+  <nav class="assignment-tabs" aria-label="Assignments">
+    <a href="index.html">Assignment 1: Options Data</a>
+    <a href="covered-call.html">Assignment 2: Covered Call</a>
+    <a href="poor-mans-covered-call.html" aria-current="page">Assignment 3: PMCC</a>
+  </nav>
+  <h1>Poor Man’s Covered Call</h1>
+  <p class="subtitle">AAPL · July 13–October 2, 2026 · Trades at 10:00 a.m. New York time</p>
+  <p>A longer-dated, in-the-money call replaces 100 shares. Selling weekly calls helps offset its cost. This diagonal spread uses less initial cash, while adding option decay, volatility sensitivity, and early-assignment risk.</p>
+  <p id="pmcc-status" role="status">Loading saved LSEG results…</p>
+  <noscript>Enable JavaScript to display the saved backtest.</noscript>
+
+  <section aria-labelledby="finding-title">
+    <h2 id="finding-title">What the backtest found</h2>
+    <p id="pmcc-conclusion" class="finding"></p>
+    <div class="table-scroll" role="region" aria-label="Strategy comparison" tabindex="0">
+      <table id="comparison"><caption>One position per strategy; equal $40,000 starting accounts; all positions liquidated October 2 at 10:00</caption>
+        <thead><tr><th>Strategy</th><th>Initial cash deployed</th><th>Net P&amp;L</th><th>Account return</th><th>P&amp;L / initial outlay</th><th>Max drawdown</th></tr></thead><tbody></tbody>
+      </table>
+    </div>
+    <p class="note">Initial outlay is the net opening cash debit, including option fees. It is not a broker’s margin requirement or a fixed risk budget. Account return uses $40,000; outlay return uses the stated opening debit. Drawdown uses daily 10:00 account marks, not intraday lows. Unused cash earns no interest.</p>
+    <p id="pmcc-attribution"></p>
+    <p>The covered-call comparison below is rerun at 10:00 with the same weekly calls and buy-to-close rules. Assignment 2 retains its original 11:00, hold-through-expiry results. The stock benchmarks receive the $0.27 August dividend; the call strategies do not.</p>
+  </section>
+
+  <section aria-labelledby="rules-title">
+    <h2 id="rules-title">Algorithm</h2>
+    <ol>
+      <li><b>Buy the backing call once.</b> On July 13 at 10:00, buy one January 15, 2027 call. Choose the largest $5 strike at or below 75% of the 09:59 stock print: $240. This expiry has 186 days remaining at entry. Keep it until the fixed end date.</li>
+      <li><b>Sell a weekly call.</b> Each Monday, use the 09:59 stock print to choose K = ceil(1.03 × S / 2.50) × 2.50. Sell one call at 10:00, expiring that Friday. Its strike must exceed the long strike and its expiry must come first. A Monday holiday is skipped.</li>
+      <li><b>Check quotes before entry.</b> Require valid bid/ask at the signal and execution, a positive bid, and a spread no larger than 20% of midpoint. Use the chosen strike or skip; never choose a substitute based on later prices.</li>
+      <li><b>Close the short before expiration.</b> Buy it back Friday at 10:00. Close earlier at 10:00 if the 09:59 short is in the money with ≤ $0.10 of time value, or before an announced ex-dividend date that precedes its expiry. Keep the long call. On October 2, cover any short and sell the long.</li>
+    </ol>
+    <p class="note">Main fills buy at ask and sell at bid, with an assumed $0.65 fee per option contract per transaction. Quotes must be from at or before the order time and at most 60 seconds old. These are simulated fills from one-minute bars, not verified executions or guaranteed size. Exact tick-level timing and market impact are unavailable.</p>
+  </section>
+
+  <section aria-labelledby="nav-title">
+    <h2 id="nav-title">Account value through time</h2>
+    <p>Hover for values; click a legend label to show a benchmark. Positions are marked at midpoint; the dashed PMCC line values liquidation at bid/ask after exit fees.</p>
+    <div id="pmcc-nav" class="backtest-chart" aria-label="PMCC and benchmark account values"></div>
+    <p id="pmcc-capital"></p>
+    <p class="note">PMCC NAV = cash + long-call value − short-call value. Fully paid positions; no margin loan. A lower opening debit does not guarantee lower percentage losses. The long call can lose its entire premium. Actual broker approval, margin, and assignment funding requirements vary.</p>
+  </section>
+
+  <section aria-labelledby="risk-title">
+    <h2 id="risk-title">Execution costs and assignment</h2>
+    <div class="table-scroll" role="region" aria-label="Execution sensitivity" tabindex="0"><table id="sensitivity"><thead><tr><th>PMCC fill assumption</th><th>Net P&amp;L</th><th>Account return</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">Each scenario uses the same contracts and trading rules. The adverse case buys 10% of the quoted spread above ask and sells 10% below bid. All three include option fees; midpoint is an optimistic sensitivity, not the main result.</p>
+    <p id="pmcc-stress"></p>
+    <p><b>Assignment limitation.</b> The main run assumes no unscheduled early assignment. Closing before expiry and screening time value reduce exposure but cannot prevent assignment between checks. If assigned, the long call does not automatically deliver stock. Exercising it forfeits its remaining time value; selling it and covering the stock can preserve that value, subject to funding and liquidity.</p>
+    <p class="note">The stress scenario assumes immediate assignment and long exercise at the first observed ITM short, with $10 charged for each exercise/assignment, then holds cash. It is an illustration, not an estimated assignment probability or a worst-case bound. Overnight stock borrowing, settlement delays, dividend liabilities, and forced broker liquidation are not simulated.</p>
+  </section>
+
+  <section aria-labelledby="records-title">
+    <h2 id="records-title">Trades and account records</h2>
+    <label class="ledger-control">Account <select id="pmcc-account"><option value="pmcc">PMCC — main result</option><option value="covered_call">Covered call — matched rules</option><option value="buy_hold">Buy and hold — 100 shares</option><option value="long_call">Long call only</option><option value="assignment_stress">Assignment stress</option></select></label>
+    <p id="pmcc-record-count"></p>
+    <p><a href="assignment3/blotter.csv" download>PMCC trade CSV</a> · <a href="assignment3/ledger.csv" download>PMCC ledger CSV</a> · <a href="assignment3/book.json" download>All accounts and scenarios (JSON)</a></p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Trade blotter"><table id="pmcc-blotter"><caption>Booked events; prices per share; one option contract = 100 shares</caption><thead><tr><th>Order time (NY)</th><th>Instrument</th><th>Action</th><th>Qty</th><th>Bid / ask</th><th>Fill</th><th>Quote age (s)</th><th>Fee</th><th>Cash change</th><th>Reason</th></tr></thead><tbody></tbody></table></div>
+    <details><summary>Daily positions and cash ledger</summary>
+      <p>Rows follow the 10:00 events. Short-call quantity is displayed as a positive count; its market value is negative. Dividend receivables are included in NAV until paid into cash.</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Daily ledger"><table id="pmcc-ledger"><thead><tr><th>Date</th><th>Cash</th><th>Shares</th><th>Long calls</th><th>Long strike / expiry</th><th>Short calls</th><th>Short strike / expiry</th><th>Long mark</th><th>Short mark</th><th>Long MV</th><th>Short MV</th><th>Stock MV</th><th>Dividend due</th><th>NAV</th><th>Liquidation NAV</th><th>Mark age (min)</th></tr></thead><tbody></tbody></table></div>
+    </details>
+    <details><summary>Weekly entry decisions</summary><p>Skipped opportunities are kept separate from booked trades.</p><div class="table-scroll" tabindex="0" role="region" aria-label="Weekly decisions"><table id="pmcc-decisions"><thead><tr><th>Monday</th><th>Short strike</th><th>Expiry</th><th>Decision</th><th>Reason</th><th>Exit</th></tr></thead><tbody></tbody></table></div></details>
+  </section>
+
+  <section aria-labelledby="interpretation-title">
+    <h2 id="interpretation-title">Interpretation</h2>
+    <p id="pmcc-interpretation"></p>
+    <p>This is one stock over twelve weeks. It includes no parameter search, and it provides no evidence of a persistent trading advantage. The rules were specified before calculating this run’s returns, not before the historical period occurred. Results omit cash interest, taxes, stock transaction fees, market impact, and unscheduled assignment in the main case.</p>
+    <p>The next useful test is a longer, separate period containing different volatility conditions, with historical quote sizes and a fuller assignment model. Keep the current rules fixed for that test.</p>
+  </section>
+
+  <details>
+    <summary>Data, sources, and how to reproduce</summary>
+    <p id="pmcc-source"></p>
+    <p>Signals use the bar ending 09:59; simulated orders use the quote available by 10:00. Bars are explicitly end-labeled and converted to America/New_York. No later bar is used. Missing entries are skipped; missing mandatory exits beyond the 60-second quote limit stop the run. Missing marks can only carry a prior quote, with age disclosed.</p>
+    <p id="pmcc-quality"></p>
+    <p>RICs come from a predefined strike grid, confirmed by quotes present at the signal time; this is not a complete historical chain. The long strike uses moneyness, not an observed delta. Dividend dates, amounts, and announcement dates come from LSEG. An announcement becomes usable the following day because its intraday timestamp is unavailable.</p>
+    <p><a href="assignment3/quotes.csv" download>Input quotes CSV</a> · <a href="assignment3/dividends.csv" download>Dividend CSV</a> · <a href="assignment3/inputs.json" download>Contract metadata</a> · <a href="assignment3/data_manifest.json" download>Download manifest</a> · <a href="https://github.com/davidp0717/fintech535/tree/main/assignment3">Code and instructions</a></p>
+    <p>From the repository root, install the existing requirements and run:</p>
+    <pre><code>python3 -m pip install -r requirements.txt
+python3 assignment3/backtest.py
+python3 -m unittest discover -s assignment3 -p 'test_*.py'</code></pre>
+    <p>The published CSV files support a complete offline rerun. <b>Data connection required</b> only to refresh prices with <code>assignment3/download.py</code>, followed by <code>assignment3/backtest.py --from-cache</code>. The website never connects to Workspace.</p>
+    <p>Strategy and assignment references: <a href="https://www.fidelity.com/learning-center/investment-products/options/options-strategy-guide/long-diagonal-spread-calls">Fidelity / Cboe: long diagonal calls</a> and <a href="https://www.optionseducation.org/referencelibrary/faq/strategies">Options Industry Council: strategy and assignment FAQ</a>. Dividend cross-check: <a href="https://investor.apple.com/dividend-history/default.aspx">Apple dividend history</a>.</p>
+  </details>
+</main>
+</body>
+</html>

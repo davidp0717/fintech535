@@ -37,3 +37,9 @@ select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px soli
 .backtest td small { display: block; font-size: 12px; color: #555; }
 .backtest caption { text-align: left; padding: 8px; color: #555; }
 .backtest .ledger-control { margin-top: 14px; }
+
+/* Assignment 3 uses the same simple page and table layout. */
+.pmcc .finding { border-left: 3px solid #194e73; padding-left: 14px; }
+.pmcc pre { overflow-x: auto; padding: 12px; background: #f1f4f6; }
+.pmcc #pmcc-status { font-size: 14px; color: #555; }
+.pmcc #comparison tbody tr:first-child { font-weight: bold; }
