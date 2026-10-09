@@ -43,3 +43,7 @@ select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px soli
 .pmcc pre { overflow-x: auto; padding: 12px; background: #f1f4f6; }
 .pmcc #pmcc-status { font-size: 14px; color: #555; }
 .pmcc #comparison tbody tr:first-child { font-weight: bold; }
+.pmcc .greeks-table { max-height: none; }
+.pmcc #pmcc-greeks th, .pmcc #pmcc-greeks td { white-space: normal; }
+.pmcc #pmcc-greeks tbody th { position: static; width: 18%; }
+.pmcc #pmcc-greeks td { width: 41%; min-width: 180px; }

@@ -7,7 +7,7 @@
   <title>FINTECH 535 · Poor Man’s Covered Call</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
-  <script src="assignment3/view.js" defer></script>
+  <script src="assignment3/view.js?v=2" defer></script>
 </head>
 <body>
 <main class="backtest pmcc">
@@ -26,7 +26,7 @@
     <h2 id="finding-title">What the backtest found</h2>
     <p id="pmcc-conclusion" class="finding"></p>
     <div class="table-scroll" role="region" aria-label="Strategy comparison" tabindex="0">
-      <table id="comparison"><caption>One position per strategy; equal $40,000 starting accounts; all positions liquidated October 2 at 10:00</caption>
+      <table id="comparison">
         <thead><tr><th>Strategy</th><th>Initial cash deployed</th><th>Net P&amp;L</th><th>Account return</th><th>P&amp;L / initial outlay</th><th>Max drawdown</th></tr></thead><tbody></tbody>
       </table>
     </div>
@@ -43,12 +43,10 @@
       <li><b>Check quotes before entry.</b> Require valid bid/ask at the signal and execution, a positive bid, and a spread no larger than 20% of midpoint. Use the chosen strike or skip; never choose a substitute based on later prices.</li>
       <li><b>Close the short before expiration.</b> Buy it back Friday at 10:00. Close earlier at 10:00 if the 09:59 short is in the money with ≤ $0.10 of time value, or before an announced ex-dividend date that precedes its expiry. Keep the long call. On October 2, cover any short and sell the long.</li>
     </ol>
-    <p class="note">Main fills buy at ask and sell at bid, with an assumed $0.65 fee per option contract per transaction. Quotes must be from at or before the order time and at most 60 seconds old. These are simulated fills from one-minute bars, not verified executions or guaranteed size. Exact tick-level timing and market impact are unavailable.</p>
   </section>
 
   <section aria-labelledby="nav-title">
     <h2 id="nav-title">Account value through time</h2>
-    <p>Hover for values; click a legend label to show a benchmark. Positions are marked at midpoint; the dashed PMCC line values liquidation at bid/ask after exit fees.</p>
     <div id="pmcc-nav" class="backtest-chart" aria-label="PMCC and benchmark account values"></div>
     <p id="pmcc-capital"></p>
     <p class="note">PMCC NAV = cash + long-call value − short-call value. Fully paid positions; no margin loan. A lower opening debit does not guarantee lower percentage losses. The long call can lose its entire premium. Actual broker approval, margin, and assignment funding requirements vary.</p>
@@ -57,10 +55,6 @@
   <section aria-labelledby="risk-title">
     <h2 id="risk-title">Execution costs and assignment</h2>
     <div class="table-scroll" role="region" aria-label="Execution sensitivity" tabindex="0"><table id="sensitivity"><thead><tr><th>PMCC fill assumption</th><th>Net P&amp;L</th><th>Account return</th></tr></thead><tbody></tbody></table></div>
-    <p class="note">Each scenario uses the same contracts and trading rules. The adverse case buys 10% of the quoted spread above ask and sells 10% below bid. All three include option fees; midpoint is an optimistic sensitivity, not the main result.</p>
-    <p id="pmcc-stress"></p>
-    <p><b>Assignment limitation.</b> The main run assumes no unscheduled early assignment. Closing before expiry and screening time value reduce exposure but cannot prevent assignment between checks. If assigned, the long call does not automatically deliver stock. Exercising it forfeits its remaining time value; selling it and covering the stock can preserve that value, subject to funding and liquidity.</p>
-    <p class="note">The stress scenario assumes immediate assignment and long exercise at the first observed ITM short, with $10 charged for each exercise/assignment, then holds cash. It is an illustration, not an estimated assignment probability or a worst-case bound. Overnight stock borrowing, settlement delays, dividend liabilities, and forced broker liquidation are not simulated.</p>
   </section>
 
   <section aria-labelledby="records-title">
@@ -79,8 +73,19 @@
   <section aria-labelledby="interpretation-title">
     <h2 id="interpretation-title">Interpretation</h2>
     <p id="pmcc-interpretation"></p>
-    <p>This is one stock over twelve weeks. It includes no parameter search, and it provides no evidence of a persistent trading advantage. The rules were specified before calculating this run’s returns, not before the historical period occurred. Results omit cash interest, taxes, stock transaction fees, market impact, and unscheduled assignment in the main case.</p>
-    <p>The next useful test is a longer, separate period containing different volatility conditions, with historical quote sizes and a fuller assignment model. Keep the current rules fixed for that test.</p>
+    <p>The PMCC combines bullish exposure from the long call with premium from selling weekly upside. If a short call becomes cheaper, buying it back retains part of that premium; a sharp rally can instead make the buyback expensive. A conventional covered call uses shares, which have no expiry and receive dividends. The PMCC uses less cash, but its backing call expires and can lose its premium. It can serve a moderately bullish view over a defined period when conserving cash matters. A stock covered call can suit an existing shareholder seeking premium income and willing to sell shares at the strike.</p>
+    <div class="table-scroll greeks-table" role="region" aria-label="Greeks comparison" tabindex="0">
+      <table id="pmcc-greeks">
+        <thead><tr><th>Greek</th><th>PMCC</th><th>Stock covered call</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Delta<br>Stock-price sensitivity</th><td>100 × (long-call delta − short-call delta). Usually bullish at entry, with less share-equivalent exposure than the matched covered call. Net delta can turn negative if the short call becomes more sensitive than the long.</td><td>100 × (1 − short-call delta). The stock contributes a fixed 100 deltas; the short call reduces upside participation.</td></tr>
+          <tr><th scope="row">Theta<br>Time decay</th><td>Short-call decay helps; long-call decay hurts. Net theta can be positive or negative, so collecting weekly premiums does not guarantee a gain from time passing.</td><td>Shares have no option time decay. The short call contributes positive theta, all else equal.</td></tr>
+          <tr><th scope="row">Vega<br>Volatility sensitivity</th><td>Long-call vega offsets short-call vega. A parallel rise in implied volatility helps if net vega is positive; the balance depends on both strikes and expiries.</td><td>Negative vega from the short call. Higher implied volatility raises its buyback cost, holding the stock price and time fixed.</td></tr>
+          <tr><th scope="row">Gamma<br>How delta changes</th><td>Long gamma minus short gamma. Near the weekly strike, the short call’s gamma can dominate as expiry approaches, reducing net delta quickly during a rally.</td><td>Shares have zero gamma; the short call makes net gamma negative. Upside participation falls as the stock rises toward and through the strike.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">These are structural Greek exposures, not measured historical values. The backtest does not estimate Greeks or separate the long call’s gain into stock movement, time decay, and volatility effects. References: <a href="https://www.fidelity.com/learning-center/investment-products/options/options-strategy-guide/long-diagonal-spread-calls">diagonal-call exposures</a>, <a href="https://www.optionseducation.org/strategies/all-strategies/covered-call-buy-write">covered calls</a>, <a href="https://www.optionseducation.org/advancedconcepts/delta">delta</a>, and <a href="https://www.optionseducation.org/advancedconcepts/gamma">gamma</a>.</p>
   </section>
 
   <details>
