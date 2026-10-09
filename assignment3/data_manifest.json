@@ -1,0 +1,12 @@
+{
+  "provider": "LSEG Workspace",
+  "start": "2026-07-13",
+  "end": "2026-10-02",
+  "interval": "PT1M",
+  "timestamp_label": "endPeriod",
+  "timezone": "America/New_York",
+  "long_ric": "AAPLA152724000.U",
+  "long_strike": 240.0,
+  "long_expiry": "2027-01-15",
+  "completed_at": "2026-10-09T20:33:14.208772+00:00"
+}

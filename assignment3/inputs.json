@@ -1,0 +1,249 @@
+{
+  "weeks": [
+    {
+      "monday": "2026-07-13",
+      "friday": "2026-07-17",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15",
+        "lookups": [
+          {
+            "ric": "AAPLA152724000.U",
+            "rows": 10
+          }
+        ]
+      },
+      "short": {
+        "ric": "AAPLG172633250.U^G26",
+        "strike": 332.5,
+        "expiry": "2026-07-17",
+        "lookups": [
+          {
+            "ric": "AAPLG172633250.U^G26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-07-20",
+      "friday": "2026-07-24",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLG242634000.U^G26",
+        "strike": 340.0,
+        "expiry": "2026-07-24",
+        "lookups": [
+          {
+            "ric": "AAPLG242634000.U^G26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-07-27",
+      "friday": "2026-07-31",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLG312634750.U^G26",
+        "strike": 347.5,
+        "expiry": "2026-07-31",
+        "lookups": [
+          {
+            "ric": "AAPLG312634750.U^G26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-08-03",
+      "friday": "2026-08-07",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLH072631750.U^H26",
+        "strike": 317.5,
+        "expiry": "2026-08-07",
+        "lookups": [
+          {
+            "ric": "AAPLH072631750.U^H26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-08-10",
+      "friday": "2026-08-14",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLH142631750.U^H26",
+        "strike": 317.5,
+        "expiry": "2026-08-14",
+        "lookups": [
+          {
+            "ric": "AAPLH142631750.U^H26",
+            "rows": 9
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-08-17",
+      "friday": "2026-08-21",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLH212631500.U^H26",
+        "strike": 315.0,
+        "expiry": "2026-08-21",
+        "lookups": [
+          {
+            "ric": "AAPLH212631500.U^H26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-08-24",
+      "friday": "2026-08-28",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLH282632250.U^H26",
+        "strike": 322.5,
+        "expiry": "2026-08-28",
+        "lookups": [
+          {
+            "ric": "AAPLH282632250.U^H26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-08-31",
+      "friday": "2026-09-04",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLI042632750.U^I26",
+        "strike": 327.5,
+        "expiry": "2026-09-04",
+        "lookups": [
+          {
+            "ric": "AAPLI042632750.U^I26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-09-07",
+      "friday": "2026-09-11",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": null
+    },
+    {
+      "monday": "2026-09-14",
+      "friday": "2026-09-18",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLI182634500.U^I26",
+        "strike": 345.0,
+        "expiry": "2026-09-18",
+        "lookups": [
+          {
+            "ric": "AAPLI182634500.U^I26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-09-21",
+      "friday": "2026-09-25",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLI252634750.U^I26",
+        "strike": 347.5,
+        "expiry": "2026-09-25",
+        "lookups": [
+          {
+            "ric": "AAPLI252634750.U^I26",
+            "rows": 10
+          }
+        ]
+      }
+    },
+    {
+      "monday": "2026-09-28",
+      "friday": "2026-10-02",
+      "long": {
+        "ric": "AAPLA152724000.U",
+        "strike": 240.0,
+        "expiry": "2027-01-15"
+      },
+      "short": {
+        "ric": "AAPLJ022635250.U^J26",
+        "strike": 352.5,
+        "expiry": "2026-10-02",
+        "lookups": [
+          {
+            "ric": "AAPLJ022635250.U^J26",
+            "rows": 10
+          }
+        ]
+      }
+    }
+  ],
+  "dividends": [
+    {
+      "ex_date": "2026-08-10",
+      "pay_date": "2026-08-13",
+      "announced": "2026-07-30",
+      "amount": 0.27
+    }
+  ],
+  "split_check": "Raw and CCH-adjusted stock closes match on 59 dates"
+}
