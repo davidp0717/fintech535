@@ -28,9 +28,7 @@ function showResults() {
     const s=results[key].summary;
     row(scenarios,[label,money(s.pnl),percent(s.account_return_pct)]);
   }
-  const stress=results.assignment_stress;
-  say('pmcc-stress',stress.stress ? `Assignment stress: at ${localTime(stress.stress.time)}, assume the short $${stress.stress.short_strike} call is assigned and the $${stress.stress.long_strike} long call is exercised. This gives up approximately ${money(stress.stress.long_time_value)} of the long call’s midpoint time value. Stopping thereafter leaves a ${money(stress.summary.pnl)} P&L (${percent(stress.summary.account_return_pct)}). Select “Assignment stress” below to inspect all four settlement events.` : 'The first-ITM assignment stress did not trigger in this sample.');
-  say('pmcc-interpretation',`The weekly calls added ${money(main.short_pnl)} relative to holding the long call alone. However, the long call’s net gain was ${money(main.long_pnl)}, compared with ${money(cc.stock_pnl + cc.dividends)} from the stock and dividend in the covered-call account. The two backing positions have different exposure: a call’s value also depends on time and implied volatility. The dataset does not separately identify those contributions.`);
+  say('pmcc-interpretation',`The PMCC earned ${money(main.pnl)} from two sources: ${money(main.long_pnl)} on the long call and ${money(main.short_pnl)} on the weekly calls, after spreads and fees. The weekly calls collected ${money(main.premium)} in premiums, but buybacks and fees reduced what was kept. The matched covered call earned the same ${money(cc.short_pnl)} on its short calls, plus ${money(cc.stock_pnl)} from its shares and ${money(cc.dividends)} in dividends. Its ${money(cc.pnl-main.pnl)} profit advantage therefore came from the backing position. The PMCC returned ${percent(main.return_on_initial_debit_pct)} on its smaller initial outlay, versus ${percent(cc.return_on_initial_debit_pct)} for the covered call; on equal $40,000 accounts, it returned ${percent(main.account_return_pct)} versus ${percent(cc.account_return_pct)}. The higher outlay return reflects a smaller denominator, not a larger dollar profit.`);
   say('pmcc-source',`${book.source.provider}; ${book.source.start}–${book.source.end}; ${book.source.quote_rows} saved signal/execution quote rows; ${main.observations} daily account observations. Long contract: ${book.source.long_ric}. Download completed ${book.source.completed_at}.`);
   say('pmcc-quality',`${main.entries} weekly calls opened; the September 7 holiday week was skipped. ${main.aged_fills} fill used a quote 60 seconds old (August 14 short buyback); ${main.stale_marks} end-of-observation position marks were carried. ${book.split_check}. This screens for splits, not every possible option adjustment. The exact-bar rule was amended to a disclosed 60-second limit after finding the missing bar and before the first completed performance run; strategy parameters were unchanged.`);
 }
@@ -86,10 +84,11 @@ async function main() {
     book=await response.json();
     showResults(); showRecords();
     document.getElementById('pmcc-account').addEventListener('change',showRecords);
-    say('pmcc-status','Historical LSEG prices • Simulated trades • Results after quoted spreads and assumed option fees');
+    document.getElementById('pmcc-status').hidden=true;
     try { await showChart(); }
     catch(error) { say('pmcc-nav','Chart unavailable. The results and account records remain available below.'); console.error(error); }
   } catch(error) {
+    document.getElementById('pmcc-status').hidden=false;
     say('pmcc-status','The saved results could not load. Please refresh the page or use a local HTTP server.');
     console.error(error);
   }
