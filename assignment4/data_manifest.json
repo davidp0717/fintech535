@@ -1,0 +1,11 @@
+{
+  "provider": "LSEG Workspace",
+  "start": "2026-05-04",
+  "end": "2026-10-30",
+  "interval": "PT1M",
+  "timestamp_label": "endPeriod",
+  "timezone": "America/New_York",
+  "quote_rows": 5022,
+  "split_check": "Raw and CCH stock closes match on 126 dates",
+  "completed_at": "2026-11-02T02:54:10.760992+00:00"
+}

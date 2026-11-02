@@ -1,0 +1,54 @@
+instrument,kind,action,quantity,strike,expiry,fill,fee,cash_delta,bid,ask,quote_time,quote_age_seconds,note,id,time,group,cash_after
+AAPLQ082627250.U^E26,put,SELL,1,272.5,2026-05-08,2.07,0.65,206.34999999999997,2.07,2.14,2026-05-04T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,1,2026-05-04T10:00:00-04:00,1,40206.35
+AAPLQ082627250.U^E26,put,EXPIRE,1,272.5,2026-05-08,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,2,2026-05-08T16:01:00-04:00,2,40206.35
+AAPLQ152628750.U^E26,put,SELL,1,287.5,2026-05-15,1.71,0.65,170.35,1.71,1.75,2026-05-11T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,3,2026-05-11T10:00:00-04:00,3,40376.7
+AAPLQ152628750.U^E26,put,EXPIRE,1,287.5,2026-05-15,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,4,2026-05-15T16:01:00-04:00,4,40376.7
+AAPLQ222629250.U^E26,put,SELL,1,292.5,2026-05-22,1.39,0.65,138.35,1.39,1.45,2026-05-18T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,5,2026-05-18T10:00:00-04:00,5,40515.049999999996
+AAPLQ222629250.U^E26,put,EXPIRE,1,292.5,2026-05-22,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,6,2026-05-22T16:01:00-04:00,6,40515.049999999996
+AAPLR052630500.U^F26,put,SELL,1,305.0,2026-06-05,1.34,0.65,133.35,1.34,1.39,2026-06-01T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,7,2026-06-01T10:00:00-04:00,7,40648.399999999994
+AAPLR052630500.U^F26,put,EXPIRE,1,305.0,2026-06-05,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,8,2026-06-05T16:01:00-04:00,8,40648.399999999994
+AAPLR122630750.U^F26,put,SELL,1,307.5,2026-06-12,3.15,0.65,314.35,3.15,3.45,2026-06-08T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,9,2026-06-08T10:00:00-04:00,9,40962.74999999999
+AAPLR122630750.U^F26,put,ASSIGN,1,307.5,2026-06-12,0.0,0.0,0.0,,,,,Expiry rule: remove short option; linked stock transfer in same atomic event,10,2026-06-12T16:01:00-04:00,10,40962.74999999999
+AAPL.O,stock,BUY,100,307.5,2026-06-12,307.5,0.0,-30750.0,,,,,Expiry rule: physical delivery at strike,11,2026-06-12T16:01:00-04:00,10,10212.749999999993
+AAPLF182630000.U^F26,call,SELL,1,300.0,2026-06-18,1.16,0.65,115.34999999999998,1.16,1.22,2026-06-15T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,12,2026-06-15T10:00:00-04:00,11,10328.099999999993
+AAPLF182630000.U^F26,call,EXPIRE,1,300.0,2026-06-18,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,13,2026-06-18T16:01:00-04:00,12,10328.099999999993
+AAPLF262630500.U^F26,call,SELL,1,305.0,2026-06-26,2.14,0.65,213.35,2.14,2.25,2026-06-22T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,14,2026-06-22T10:00:00-04:00,13,10541.449999999993
+AAPLF262630500.U^F26,call,EXPIRE,1,305.0,2026-06-26,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,15,2026-06-26T16:01:00-04:00,14,10541.449999999993
+AAPLG022628750.U^G26,call,SELL,1,287.5,2026-07-02,2.0,0.65,199.35,2.0,2.06,2026-06-29T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,16,2026-06-29T10:00:00-04:00,15,10740.799999999994
+AAPLG022628750.U^G26,call,ASSIGN,1,287.5,2026-07-02,0.0,0.0,0.0,,,,,Expiry rule: remove short option; linked stock transfer in same atomic event,17,2026-07-02T16:01:00-04:00,16,10740.799999999994
+AAPL.O,stock,SELL,100,287.5,2026-07-02,287.5,0.0,28750.0,,,,,Expiry rule: physical delivery at strike,18,2026-07-02T16:01:00-04:00,16,39490.799999999996
+AAPLS102630500.U^G26,put,SELL,1,305.0,2026-07-10,1.97,0.65,196.35,1.97,2.08,2026-07-06T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,19,2026-07-06T10:00:00-04:00,17,39687.149999999994
+AAPLS102630500.U^G26,put,EXPIRE,1,305.0,2026-07-10,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,20,2026-07-10T16:01:00-04:00,18,39687.149999999994
+AAPLS172631750.U^G26,put,SELL,1,317.5,2026-07-17,2.18,0.65,217.35000000000002,2.18,2.33,2026-07-13T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,21,2026-07-13T10:00:00-04:00,19,39904.49999999999
+AAPLS172631750.U^G26,put,EXPIRE,1,317.5,2026-07-17,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,22,2026-07-17T16:01:00-04:00,20,39904.49999999999
+AAPLS242632500.U^G26,put,SELL,1,325.0,2026-07-24,3.0,0.65,299.35,3.0,3.1,2026-07-20T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,23,2026-07-20T10:00:00-04:00,21,40203.84999999999
+AAPLS242632500.U^G26,put,EXPIRE,1,325.0,2026-07-24,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,24,2026-07-24T16:01:00-04:00,22,40203.84999999999
+AAPLS312633000.U^G26,put,SELL,1,330.0,2026-07-31,4.2,0.65,419.35,4.2,4.5,2026-07-27T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,25,2026-07-27T10:00:00-04:00,23,40623.19999999999
+AAPLS312633000.U^G26,put,ASSIGN,1,330.0,2026-07-31,0.0,0.0,0.0,,,,,Expiry rule: remove short option; linked stock transfer in same atomic event,26,2026-07-31T16:01:00-04:00,24,40623.19999999999
+AAPL.O,stock,BUY,100,330.0,2026-07-31,330.0,0.0,-33000.0,,,,,Expiry rule: physical delivery at strike,27,2026-07-31T16:01:00-04:00,24,7623.19999999999
+AAPLH072631000.U^H26,call,SELL,1,310.0,2026-08-07,2.85,0.65,284.35,2.85,2.95,2026-08-03T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,28,2026-08-03T10:00:00-04:00,25,7907.54999999999
+AAPLH072631000.U^H26,call,ASSIGN,1,310.0,2026-08-07,0.0,0.0,0.0,,,,,Expiry rule: remove short option; linked stock transfer in same atomic event,29,2026-08-07T16:01:00-04:00,26,7907.54999999999
+AAPL.O,stock,SELL,100,310.0,2026-08-07,310.0,0.0,31000.0,,,,,Expiry rule: physical delivery at strike,30,2026-08-07T16:01:00-04:00,26,38907.54999999999
+AAPLT142630250.U^H26,put,SELL,1,302.5,2026-08-14,1.77,0.65,176.35,1.77,1.83,2026-08-10T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,31,2026-08-10T10:00:00-04:00,27,39083.89999999999
+AAPLT142630250.U^H26,put,EXPIRE,1,302.5,2026-08-14,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,32,2026-08-14T16:01:00-04:00,28,39083.89999999999
+AAPLT212630250.U^H26,put,SELL,1,302.5,2026-08-21,1.78,0.65,177.35,1.78,1.84,2026-08-17T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,33,2026-08-17T10:00:00-04:00,29,39261.249999999985
+AAPLT212630250.U^H26,put,EXPIRE,1,302.5,2026-08-21,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,34,2026-08-21T16:01:00-04:00,30,39261.249999999985
+AAPLT282630750.U^H26,put,SELL,1,307.5,2026-08-28,1.8,0.65,179.35,1.8,1.88,2026-08-24T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,35,2026-08-24T10:00:00-04:00,31,39440.599999999984
+AAPLT282630750.U^H26,put,EXPIRE,1,307.5,2026-08-28,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,36,2026-08-28T16:01:00-04:00,32,39440.599999999984
+AAPLU042631250.U^I26,put,SELL,1,312.5,2026-09-04,1.52,0.65,151.35,1.52,1.59,2026-08-31T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,37,2026-08-31T10:00:00-04:00,33,39591.94999999998
+AAPLU042631250.U^I26,put,EXPIRE,1,312.5,2026-09-04,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,38,2026-09-04T16:01:00-04:00,34,39591.94999999998
+AAPLU182633000.U^I26,put,SELL,1,330.0,2026-09-18,2.48,0.65,247.35,2.48,2.52,2026-09-14T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,39,2026-09-14T10:00:00-04:00,35,39839.29999999998
+AAPLU182633000.U^I26,put,EXPIRE,1,330.0,2026-09-18,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,40,2026-09-18T16:01:00-04:00,36,39839.29999999998
+AAPLU252633250.U^I26,put,SELL,1,332.5,2026-09-25,2.17,0.65,216.35,2.17,2.27,2026-09-21T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,41,2026-09-21T10:00:00-04:00,37,40055.64999999998
+AAPLU252633250.U^I26,put,EXPIRE,1,332.5,2026-09-25,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,42,2026-09-25T16:01:00-04:00,38,40055.64999999998
+AAPLV022633750.U^J26,put,SELL,1,337.5,2026-10-02,1.67,0.65,166.35,1.67,1.71,2026-09-28T10:00:00-04:00,0.0,Monday 10:00; put strike from 09:59 stock print; hold to expiry,43,2026-09-28T10:00:00-04:00,39,40221.99999999998
+AAPLV022633750.U^J26,put,ASSIGN,1,337.5,2026-10-02,0.0,0.0,0.0,,,,,Expiry rule: remove short option; linked stock transfer in same atomic event,44,2026-10-02T16:01:00-04:00,40,40221.99999999998
+AAPL.O,stock,BUY,100,337.5,2026-10-02,337.5,0.0,-33750.0,,,,,Expiry rule: physical delivery at strike,45,2026-10-02T16:01:00-04:00,40,6471.999999999978
+AAPLJ092633750.U^J26,call,SELL,1,337.5,2026-10-09,2.14,0.65,213.35,2.14,2.21,2026-10-05T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,46,2026-10-05T10:00:00-04:00,41,6685.3499999999785
+AAPLJ092633750.U^J26,call,EXPIRE,1,337.5,2026-10-09,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,47,2026-10-09T16:01:00-04:00,42,6685.3499999999785
+AAPLJ162634500.U^J26,call,SELL,1,345.0,2026-10-16,2.07,0.65,206.34999999999997,2.07,2.14,2026-10-12T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,48,2026-10-12T10:00:00-04:00,43,6891.699999999979
+AAPLJ162634500.U^J26,call,EXPIRE,1,345.0,2026-10-16,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,49,2026-10-16T16:01:00-04:00,44,6891.699999999979
+AAPLJ232635000.U^J26,call,SELL,1,350.0,2026-10-23,1.92,0.65,191.35,1.92,2.0,2026-10-19T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,50,2026-10-19T10:00:00-04:00,45,7083.049999999979
+AAPLJ232635000.U^J26,call,EXPIRE,1,350.0,2026-10-23,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,51,2026-10-23T16:01:00-04:00,46,7083.049999999979
+AAPLJ302634750.U,call,SELL,1,347.5,2026-10-30,2.07,0.65,206.34999999999997,2.07,2.14,2026-10-26T10:00:00-04:00,0.0,Monday 10:00; call strike from 09:59 stock print; hold to expiry,52,2026-10-26T10:00:00-04:00,47,7289.39999999998
+AAPLJ302634750.U,call,EXPIRE,1,347.5,2026-10-30,0.0,0.0,0.0,,,,,Below $0.01 ITM at expiry close; option removed; no premium collected twice,53,2026-10-30T16:01:00-04:00,48,7289.39999999998

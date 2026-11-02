@@ -1,0 +1,27 @@
+week,kind,strike,expiry,ric,status,reason
+2026-05-04,put,272.5,2026-05-08,AAPLQ082627250.U^E26,Entered,Valid prior signal and execution quote; fully funded
+2026-05-11,put,287.5,2026-05-15,AAPLQ152628750.U^E26,Entered,Valid prior signal and execution quote; fully funded
+2026-05-18,put,292.5,2026-05-22,AAPLQ222629250.U^E26,Entered,Valid prior signal and execution quote; fully funded
+2026-05-25,,,2026-05-29,,Skipped,Monday exchange holiday; no Tuesday catch-up
+2026-06-01,put,305.0,2026-06-05,AAPLR052630500.U^F26,Entered,Valid prior signal and execution quote; fully funded
+2026-06-08,put,307.5,2026-06-12,AAPLR122630750.U^F26,Entered,Valid prior signal and execution quote; fully funded
+2026-06-15,call,300.0,2026-06-18,AAPLF182630000.U^F26,Entered,Valid prior signal and execution quote; fully funded
+2026-06-22,call,305.0,2026-06-26,AAPLF262630500.U^F26,Entered,Valid prior signal and execution quote; fully funded
+2026-06-29,call,287.5,2026-07-02,AAPLG022628750.U^G26,Entered,Valid prior signal and execution quote; fully funded
+2026-07-06,put,305.0,2026-07-10,AAPLS102630500.U^G26,Entered,Valid prior signal and execution quote; fully funded
+2026-07-13,put,317.5,2026-07-17,AAPLS172631750.U^G26,Entered,Valid prior signal and execution quote; fully funded
+2026-07-20,put,325.0,2026-07-24,AAPLS242632500.U^G26,Entered,Valid prior signal and execution quote; fully funded
+2026-07-27,put,330.0,2026-07-31,AAPLS312633000.U^G26,Entered,Valid prior signal and execution quote; fully funded
+2026-08-03,call,310.0,2026-08-07,AAPLH072631000.U^H26,Entered,Valid prior signal and execution quote; fully funded
+2026-08-10,put,302.5,2026-08-14,AAPLT142630250.U^H26,Entered,Valid prior signal and execution quote; fully funded
+2026-08-17,put,302.5,2026-08-21,AAPLT212630250.U^H26,Entered,Valid prior signal and execution quote; fully funded
+2026-08-24,put,307.5,2026-08-28,AAPLT282630750.U^H26,Entered,Valid prior signal and execution quote; fully funded
+2026-08-31,put,312.5,2026-09-04,AAPLU042631250.U^I26,Entered,Valid prior signal and execution quote; fully funded
+2026-09-07,,,2026-09-11,,Skipped,Monday exchange holiday; no Tuesday catch-up
+2026-09-14,put,330.0,2026-09-18,AAPLU182633000.U^I26,Entered,Valid prior signal and execution quote; fully funded
+2026-09-21,put,332.5,2026-09-25,AAPLU252633250.U^I26,Entered,Valid prior signal and execution quote; fully funded
+2026-09-28,put,337.5,2026-10-02,AAPLV022633750.U^J26,Entered,Valid prior signal and execution quote; fully funded
+2026-10-05,call,337.5,2026-10-09,AAPLJ092633750.U^J26,Entered,Valid prior signal and execution quote; fully funded
+2026-10-12,call,345.0,2026-10-16,AAPLJ162634500.U^J26,Entered,Valid prior signal and execution quote; fully funded
+2026-10-19,call,350.0,2026-10-23,AAPLJ232635000.U^J26,Entered,Valid prior signal and execution quote; fully funded
+2026-10-26,call,347.5,2026-10-30,AAPLJ302634750.U,Entered,Valid prior signal and execution quote; fully funded
