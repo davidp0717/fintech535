@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AAPL Wheel strategy: historical trades, portfolio ledger, execution assumptions and benchmark comparison.">
+  <title>FINTECH 535 · Wheel Strategy</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
+  <script src="assignment4/view.js" defer></script>
+</head>
+<body>
+<main class="backtest wheel">
+  <nav class="assignment-tabs" aria-label="Assignments">
+    <a href="index.html">Assignment 1: Options Data</a>
+    <a href="covered-call.html">Assignment 2: Covered Call</a>
+    <a href="poor-mans-covered-call.html">Assignment 3: PMCC</a>
+    <a href="wheel.html" aria-current="page">Assignment 4: Wheel</a>
+  </nav>
+  <h1>Wheel Strategy</h1>
+  <p class="subtitle">AAPL · May 4–October 30, 2026 · Trades at 10:00 a.m. New York time</p>
+  <p>Sell a cash-secured put. If assigned, own 100 shares and sell covered calls. When the shares are called away, return to selling puts.</p>
+  <p id="wheel-status" role="status">Loading saved LSEG results…</p>
+  <noscript>Enable JavaScript to display the saved backtest.</noscript>
+
+  <section aria-labelledby="finding-title">
+    <h2 id="finding-title">What the backtest found</h2>
+    <p id="wheel-conclusion" class="finding"></p>
+    <div class="table-scroll" role="region" aria-label="Strategy comparison" tabindex="0"><table id="comparison">
+      <thead><tr><th>Strategy</th><th>Net P&amp;L</th><th>Account return</th><th>Max drawdown</th><th>Annualized volatility</th><th>Sharpe</th></tr></thead><tbody></tbody>
+    </table></div>
+    <p class="note">Equal $40,000 accounts; one option contract and at most 100 shares; idle cash earns zero. Results include quoted spreads, option fees and earned dividends. Final holdings remain invested and are marked at the October 30 close. Drawdown uses daily closing NAV. Volatility and Sharpe annualize daily returns using 252 sessions; Sharpe uses a zero reference rate. This six-month sample does not establish long-run performance.</p>
+    <p id="wheel-attribution"></p>
+  </section>
+
+  <section aria-labelledby="rules-title">
+    <h2 id="rules-title">Thesis and algorithm</h2>
+    <p><b>Thesis:</b> repeatedly selling short-dated options may earn enough premium to reduce volatility and improve Sharpe relative to holding 100 shares plus idle cash. The trade-off is less participation in rallies and substantial downside when assigned shares fall. The comparison above tests that claim, rather than assuming premium income is profit.</p>
+    <ol>
+      <li><b>When holding cash:</b> each Monday, use the 09:59 stock print to select a put with K = floor(0.99 × S / 2.50) × 2.50. Sell one at 10:00 only if existing cash covers 100 × K plus the fee. Reserve the full strike amount.</li>
+      <li><b>When holding 100 shares:</b> sell one call with K = ceil(1.01 × S / 2.50) × 2.50. The strike follows the current stock price and can be below acquisition cost. No uncovered calls or borrowing.</li>
+      <li><b>Wait through expiry:</b> use that week's last exchange session. At least $0.01 in the money at the closing stock print means modeled assignment: a put buys 100 shares at K; a call sells them at K. Otherwise the option expires. Resume next Monday. No discretionary closes, stop losses or rolls.</li>
+      <li><b>Use only available information:</b> require valid signal and execution quotes, positive bid, spread ≤20% of midpoint, and quote age ≤60 seconds. Skip an unavailable chosen contract. Closed Mondays are skipped; June 19 and July 3 expiries shift to Thursday. Rules were fixed before calculating results, with no parameter search.</li>
+    </ol>
+    <p class="note">The covered-call benchmark buys 100 shares when flat and writes the same weekly call rule. Buy and hold purchases 100 shares at the first 10:00 ask. These comparisons use the same dates and funding; the prior assignment pages retain their original backtests.</p>
+  </section>
+
+  <section aria-labelledby="nav-title">
+    <h2 id="nav-title">Account value through time</h2>
+    <div id="wheel-nav" class="backtest-chart" aria-label="Wheel and benchmark account values"></div>
+    <p id="wheel-capital"></p>
+    <p class="note">NAV = cash + stock value − short-option liability + dividend receivable. Put collateral is part of cash, not an expense. Free cash = cash − put collateral. Covered calls are secured by the 100 shares.</p>
+  </section>
+
+  <section aria-labelledby="portfolio-title">
+    <h2 id="portfolio-title">Portfolio at a point in time</h2>
+    <label class="ledger-control">Account <select id="wheel-account">
+      <option value="wheel">Wheel — main result</option><option value="covered_call">Covered call</option><option value="buy_hold">Buy and hold</option>
+      <option value="midpoint">Wheel — midpoint fills</option><option value="adverse">Wheel — adverse fills</option><option value="early_assignment">Wheel — early assignment</option>
+    </select></label>
+    <div class="controls portfolio-controls">
+      <label>New York date and time <input id="portfolio-time" type="datetime-local" min="2026-05-04T09:59" max="2026-10-30T16:01" step="60" value="2026-10-30T16:01"></label>
+      <label>Event timing <select id="portfolio-side"><option value="after">After events at this time</option><option value="before">Before events at this time</option></select></label>
+      <button id="show-portfolio" type="button">Show portfolio</button>
+    </div>
+    <label class="snapshot-control">Or select a recorded state <select id="portfolio-record" aria-label="Recorded portfolio state"></select></label>
+    <p id="portfolio-status" role="status"></p>
+    <div class="table-scroll portfolio-table" role="region" aria-label="Selected portfolio" tabindex="0"><table id="portfolio"><thead><tr><th>Account component</th><th>Position / value</th></tr></thead><tbody></tbody></table></div>
+    <p id="portfolio-marks" class="note"></p>
+    <p class="note">Positions and cash reflect every booked event through the selected time. Valuations use the latest recorded mark at or before it; no prices are interpolated. Assignment and its stock transfer are one atomic event, with before/after states. The modeled expiry event is recorded at 16:01, not the actual broker notification or settlement time.</p>
+  </section>
+
+  <section aria-labelledby="cost-title">
+    <h2 id="cost-title">Execution costs and assignment</h2>
+    <div class="table-scroll" role="region" aria-label="Execution and assignment sensitivity" tabindex="0"><table id="sensitivity"><thead><tr><th>Wheel scenario</th><th>Net P&amp;L</th><th>Account return</th><th>Sharpe</th></tr></thead><tbody></tbody></table></div>
+    <p>Option sales fill at the observed bid; purchases, if required, at the ask. Each option transaction costs $0.65. Midpoint and adverse fills (an extra 10% of spread beyond bid/ask) rerun the same entries. These are simulated prices from one-minute, end-labeled bars; available size and actual executions are not observed. Stock transactions and assignments have no assumed fee.</p>
+    <p id="wheel-spreads"></p>
+    <p id="wheel-assignment"></p>
+    <details id="scatter-details"><summary>Quote evidence: midpoint versus reported trade</summary>
+      <p id="scatter-stat"></p>
+      <div id="wheel-scatter" class="backtest-chart" aria-label="Option midpoint versus reported trade prices"></div>
+      <p class="note">Only observations with valid bid/ask, a trade field and positive reported bar volume are included, for the contracts actually sold from entry through expiry. A high R² shows close price correspondence, not that midpoint orders would execute. The last trade and quote need not occur simultaneously; bid fills and the cost sensitivity remain the main evidence for the execution assumption.</p>
+    </details>
+  </section>
+
+  <section aria-labelledby="records-title">
+    <h2 id="records-title">Trades and account records</h2>
+    <p id="wheel-record-count"></p>
+    <p><a href="assignment4/blotter.csv" download>Wheel trade CSV</a> · <a href="assignment4/ledger.csv" download>Wheel ledger CSV</a> · <a href="assignment4/book.json" download>All accounts and scenarios (JSON)</a></p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Trade blotter"><table id="wheel-blotter"><caption>Selected account above; option quantity is contracts, stock quantity is shares. Click an event number to inspect its resulting portfolio.</caption><thead><tr><th>Event</th><th>Time (NY)</th><th>Instrument</th><th>Action</th><th>Qty</th><th>Strike / expiry</th><th>Bid / ask</th><th>Fill</th><th>Fee</th><th>Cash change</th><th>Cash after row</th><th>Reason</th></tr></thead><tbody></tbody></table></div>
+    <details id="ledger-details"><summary>Full ledger: hourly marks and every before/after event</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Full portfolio ledger"><table id="wheel-ledger"><thead><tr><th>Time (NY)</th><th>State</th><th>Cash</th><th>Shares</th><th>Short puts</th><th>Covered calls</th><th>Contract / strike / expiry</th><th>Put collateral</th><th>Free cash</th><th>Stock MV</th><th>Option MV</th><th>Dividend due</th><th>NAV</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
+    <details><summary>Weekly entry decisions, including skips</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Weekly entry decisions"><table id="wheel-decisions"><thead><tr><th>Monday</th><th>Type</th><th>Strike</th><th>Expiry</th><th>Decision</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
+  </section>
+
+  <section aria-labelledby="interpretation-title">
+    <h2 id="interpretation-title">Interpretation</h2>
+    <p id="wheel-interpretation"></p>
+    <p>The wheel is bullish and short volatility in both phases. A short put has positive delta; after assignment, the covered call keeps positive stock exposure but caps upside. Both short options benefit from time decay, all else equal, and have negative gamma and vega. A large price move can overwhelm several weeks of premium. The put phase can miss a rally while waiting to buy, and selling calls after a drop can lock in a loss when shares rebound.</p>
+    <p>This implementation may suit a willingness to buy the stock at the put strike and sell it at the call strike, with cash reserved throughout. It did not improve Sharpe here. A useful next test would include a separately held-out bear or sideways period and interest on collateral using a rate known at each date. Changing strikes after seeing these results would need a new out-of-sample test.</p>
+  </section>
+
+  <details><summary>Data, sources, and how to reproduce</summary>
+    <p id="wheel-source"></p>
+    <p>The saved observations come from LSEG Workspace: one-minute stock and weekly-option quotes, raw daily stock closes, and dividend events. Contract identifiers follow a predetermined $2.50 strike grid and are accepted only with signal-time observations; this is not a complete historical options chain. The rule specification was frozen on November 1 before performance was calculated, not before the historical trading window.</p>
+    <p id="wheel-quality"></p>
+    <p>Shares held entering the May 11 and August 10 ex-dates earn $0.27 each, accrued then paid May 14 and August 13. This includes $54 in the buy-and-hold benchmark. Cash interest, taxes, market impact and settlement delays are excluded. The main assignment model uses expiry intrinsic value; contrary exercise and after-hours pin risk are not modeled.</p>
+    <p><a href="assignment4/quotes.csv" download>Input quotes CSV</a> · <a href="assignment4/dividends.csv" download>Dividends CSV</a> · <a href="assignment4/inputs.json" download>Contract metadata</a> · <a href="assignment4/data_manifest.json" download>Data manifest</a> · <a href="assignment4/SPECIFICATION.md">Frozen rules</a> · <a href="https://github.com/davidp0717/fintech535/tree/main/assignment4">Code and instructions</a></p>
+    <pre><code>python3 -m pip install -r requirements.txt
+python3 assignment4/backtest.py
+python3 -m unittest discover -s assignment4 -p 'test_*.py'</code></pre>
+    <p>These commands rerun the backtest offline from the published inputs. <b>Data connection required</b> only for refreshing with <code>python3 assignment4/download.py</code>. The GitHub Pages website reads saved JSON and never connects to Workspace. Input and rule hashes are included in that JSON.</p>
+    <p>References: <a href="https://www.schwab.com/learn/story/three-things-to-know-about-wheel-strategy">Schwab: wheel strategy</a> · <a href="https://www.optionseducation.org/referencelibrary/faq/options-assignment">OIC: assignment</a> · <a href="https://www.nyse.com/trade/hours-calendars">NYSE: exchange calendar</a> · <a href="https://investor.apple.com/dividend-history/default.aspx">Apple: dividend history</a>.</p>
+  </details>
+</main>
+</body>
+</html>

@@ -5,7 +5,9 @@
 
 - [Assignment 3: Poor Man’s Covered Call](https://davidp0717.github.io/fintech535/poor-mans-covered-call.html) — [code and instructions](assignment3/README.md)
 
-All three assignments share the navigation tabs and GitHub Pages site.
+- [Assignment 4: Wheel Strategy](https://davidp0717.github.io/fintech535/wheel.html) — [code and instructions](assignment4/README.md)
+
+All four assignments share the navigation tabs and GitHub Pages site.
 
 ## Assignment 1
 
