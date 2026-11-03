@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from market_calendar import close_clock
 from config import (START, END, SYMBOL, TZ, INITIAL_CASH, PUT_MONEYNESS,
     CALL_MONEYNESS, STRIKE_GRID, OPTION_FEE, ASSIGNMENT_FEE,
     MAX_ENTRY_SPREAD, MAX_QUOTE_AGE_SECONDS, HOLIDAYS)
@@ -51,6 +52,7 @@ def load_inputs():
     info = json.loads((ROOT/'inputs.json').read_text())
     raw = pd.read_csv(ROOT/'quotes.csv')
     raw['time'] = pd.to_datetime(raw['time'],utc=True).dt.tz_convert(TZ)
+    raw = raw.loc[[t.strftime('%H:%M') <= close_clock(t.date()) for t in raw['time']]]
     bars = {ric:group.set_index('time').drop(columns=['ric','role']).sort_index()
             for ric,group in raw.groupby('ric')}
     for ric, frame in bars.items():
@@ -68,17 +70,18 @@ def simulate(data, strategy='wheel', scenario='bid_ask', early_assignment=False)
     trades, ledger, decisions, claims = [], [], [], {}
     group_id = 0
     days = sorted(data['closes'])
+    closes_at = {d:timestamp(d,close_clock(d)) for d in days}
     weeks = {w['monday']:w for w in data['weeks']}
     stocks = data['bars'][SYMBOL]
 
     def state(time, phase, reason, group=None):
         stock_q = quote(stocks,time)
         # The daily close is available only at/after that session's close.
-        known_days = [d for d in days if timestamp(d,'16:00')<=time]
+        known_days = [d for d in days if closes_at[d]<=time]
         closing_day = known_days[-1] if known_days else None
-        if closing_day and (stock_q is None or timestamp(closing_day,'16:00')>=pd.Timestamp(stock_q['time'])):
+        if closing_day and (stock_q is None or timestamp(closing_day,close_clock(closing_day))>=pd.Timestamp(stock_q['time'])):
             stock_mark = data['closes'][closing_day]
-            stock_time = timestamp(closing_day,'16:00').isoformat()
+            stock_time = timestamp(closing_day,close_clock(closing_day)).isoformat()
             stock_source = 'Raw daily closing print'
             stock_bid = stock_q['bid'] if stock_q and stock_q['time']==stock_time else stock_mark
         else:
@@ -91,10 +94,10 @@ def simulate(data, strategy='wheel', scenario='bid_ask', early_assignment=False)
         if position:
             option = {k:position[k] for k in ['ric','kind','strike','expiry']}
             option['quantity'] = -1
-            if time>=timestamp(position['expiry'],'16:00'):
+            if time>=timestamp(position['expiry'],close_clock(position['expiry'])):
                 mark = intrinsic(position,data['closes'][position['expiry']])
-                option.update(mark=mark,quote_time=timestamp(position['expiry'],'16:00').isoformat(),
-                    mark_source='Expiry intrinsic value',quote_age_seconds=(time-timestamp(position['expiry'],'16:00')).total_seconds())
+                option.update(mark=mark,quote_time=timestamp(position['expiry'],close_clock(position['expiry'])).isoformat(),
+                    mark_source='Expiry intrinsic value',quote_age_seconds=(time-timestamp(position['expiry'],close_clock(position['expiry']))).total_seconds())
                 liquidation_cost = 100*mark
             else:
                 q = quote(data['bars'][position['ric']],time)
@@ -208,11 +211,12 @@ def simulate(data, strategy='wheel', scenario='bid_ask', early_assignment=False)
                         note=f'Monday 10:00; {kind} strike from 09:59 stock print; hold to expiry',contract=c)],shares,c,'Sell '+kind)
                     decision.update(status='Entered',reason='Valid prior signal and execution quote; fully funded')
         for clock in ['10:00','11:00','12:00','13:00','14:00','15:00','16:00']:
+            if clock > close_clock(day): continue
             ledger.append(state(timestamp(day,clock),'mark','Scheduled valuation'))
         if position and day==position['expiry']:
             value = intrinsic(position,data['closes'][day])
-            settle(timestamp(day,'16:01'),value>=.01-1e-9)
-        ledger.append(state(timestamp(day,'16:01'),'close','Daily close after modeled expiry events'))
+            settle(timestamp(day,close_clock(day))+pd.Timedelta(minutes=1),value>=.01-1e-9)
+        ledger.append(state(timestamp(day,close_clock(day))+pd.Timedelta(minutes=1),'close','Daily close after modeled expiry events'))
     for week in data['weeks']:
         if week['monday'] in HOLIDAYS and strategy!='buy_hold':
             decisions.append({'week':week['monday'],'kind':'','strike':None,'expiry':week['expiry'],
@@ -287,7 +291,7 @@ def diagnostics(data, main):
     points = []
     for e in entries:
         frame = data['bars'][e['instrument']]
-        frame = frame[(frame.index>=pd.Timestamp(e['time'])) & (frame.index<=timestamp(e['expiry'],'16:00'))]
+        frame = frame[(frame.index>=pd.Timestamp(e['time'])) & (frame.index<=timestamp(e['expiry'],close_clock(e['expiry'])))]
         for time,row in frame.iterrows():
             if not all(finite(row.get(k)) for k in ['BID','ASK','TRDPRC_1','ACVOL_UNS']): continue
             if row['BID']<0 or row['ASK']<=0 or row['BID']>row['ASK'] or row['ACVOL_UNS']<=0: continue

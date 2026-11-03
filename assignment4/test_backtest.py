@@ -21,6 +21,30 @@ def example():
     return {'weeks':weeks,'closes':closes,'bars':bars,'dividends':[]}
 
 class WheelTests(unittest.TestCase):
+    def test_early_close_settles_at_1301_without_later_marks(self):
+        # Move the existing two-week artificial path into Thanksgiving week.
+        data=example()
+        mapping={d:str((pd.Timestamp(d)-pd.Timestamp('2026-05-04')+pd.Timestamp('2025-11-17')).date()) for d in data['closes']}
+        data['closes']={mapping[d]:v for d,v in data['closes'].items() if mapping[d]!='2025-11-27'}
+        for frame in data['bars'].values():
+            frame.index=pd.DatetimeIndex([bt.timestamp(mapping[str(t.date())],t.strftime('%H:%M')) for t in frame.index])
+        for w in data['weeks']:
+            for key in ['monday','friday','expiry']: w[key]=mapping[w[key]]
+            for kind in ['put','call']: w[kind]['expiry']=w['expiry']
+        result=bt.simulate(data)
+        day=[row for row in result['ledger'] if row['time'].startswith('2025-11-28')]
+        self.assertEqual(day[-1]['time'],'2025-11-28T13:01:00-05:00')
+        self.assertTrue(all(row['time'][11:16]<='13:01' for row in day))
+        self.assertEqual(day[-1]['option'],None)
+
+    def test_holiday_expiry_and_winter_timezone(self):
+        from market_calendar import expiry_day, next_session, close_clock
+        self.assertEqual(expiry_day('2026-03-30'),'2026-04-02')
+        self.assertEqual(str(next_session('2026-04-02').date()),'2026-04-06')
+        self.assertEqual(close_clock('2025-12-24'),'13:00')
+        self.assertEqual(bt.timestamp('2025-11-03','10:00').tz_convert('UTC').hour,15)
+        self.assertEqual(bt.timestamp('2026-07-13','10:00').tz_convert('UTC').hour,14)
+
     def test_full_wheel_and_atomic_assignment(self):
         r=bt.simulate(example())
         assignments=[e for e in r['blotter'] if e['action']=='ASSIGN']

@@ -87,21 +87,21 @@ def main():
     ld.open_session(name='desktop.workspace')
     signal.alarm(0)
     try:
-        if not (CACHE/'daily.pkl').exists():
+        if not (CACHE/f'daily-{START}-{END}.pkl').exists():
             signal.alarm(90)
-            raw = ld.get_history(SYMBOL,fields=['TRDPRC_1'],interval='daily',start=START,end=END,adjustments='unadjusted')
-            adjusted = ld.get_history(SYMBOL,fields=['TRDPRC_1'],interval='daily',start=START,end=END,adjustments='CCH')
+            raw = ld.get_history(SYMBOL,fields=['TRDPRC_1'],interval='daily',start=str((pd.Timestamp(START)-pd.Timedelta(days=1)).date()),end=END,adjustments='unadjusted')
+            adjusted = ld.get_history(SYMBOL,fields=['TRDPRC_1'],interval='daily',start=str((pd.Timestamp(START)-pd.Timedelta(days=1)).date()),end=END,adjustments='CCH')
             signal.alarm(0)
-            pd.to_pickle({'raw':raw,'adjusted':adjusted},CACHE/'daily.pkl')
+            pd.to_pickle({'raw':raw,'adjusted':adjusted},CACHE/f'daily-{START}-{END}.pkl')
         # Filter by ex-date explicitly: announcement-date filtering omits the
         # May dividend, which was announced before this backtest began.
         signal.alarm(90)
         dividends = ld.get_data(SYMBOL,['TR.DivExDate','TR.DivPayDate','TR.DivUnadjustedGross','TR.DivAnnouncementDate'],
             parameters={'SDate':START,'EDate':END,'DateType':'ED','CAEventType':'SDI'})
         signal.alarm(0)
-        daily = pd.read_pickle(CACHE/'daily.pkl')
+        daily = pd.read_pickle(CACHE/f'daily-{START}-{END}.pkl')
         daily['dividends'] = dividends
-        pd.to_pickle(daily,CACHE/'daily.pkl')
+        pd.to_pickle(daily,CACHE/f'daily-{START}-{END}.pkl')
         for m in pd.date_range(START,END,freq='W-MON'):
             monday, friday = str(m.date()),str((m+pd.Timedelta(days=4)).date())
             path = CACHE/f'week-{monday}.pkl'
@@ -128,7 +128,7 @@ def main():
         ld.close_session()
 
 def export():
-    daily = pd.read_pickle(CACHE/'daily.pkl')
+    daily = pd.read_pickle(CACHE/f'daily-{START}-{END}.pkl')
     pair = pd.concat([daily['raw'].iloc[:,0],daily['adjusted'].iloc[:,0]],axis=1).dropna()
     if pair.empty or not (pair.iloc[:,0]-pair.iloc[:,1]).abs().lt(.00001).all():
         raise ValueError('Raw / CCH split screen failed')
@@ -140,6 +140,7 @@ def export():
     metadata, quotes = [], []
     for path in sorted(CACHE.glob('week-*.pkl')):
         week = pd.read_pickle(path)
+        if not START <= week['monday'] <= END: continue
         row = {k:week[k] for k in ['monday','friday','expiry','fetched_at']}
         for kind in ['put','call']:
             row[kind] = {k:v for k,v in week[kind].items() if k!='bars'} if week[kind] else None

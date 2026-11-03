@@ -2,7 +2,7 @@
 
 [Published page](https://davidp0717.github.io/fintech535/wheel.html)
 
-AAPL, May 4–October 30, 2026. Sell a fully cash-secured weekly put; after
+AAPL, November 3, 2025–October 30, 2026. Sell a fully cash-secured weekly put; after
 assignment sell covered calls against 100 shares; after call assignment return
 to puts. Monday 09:59 New York signals, 10:00 orders. The frozen rules are in
 [SPECIFICATION.md](SPECIFICATION.md). The rules were selected before calculating
@@ -86,6 +86,14 @@ account. Equal initial cash does not mean equal market exposure. Option cash
 receipts and stock P&L at assignment strikes are presented together, because put
 assignment losses must not disappear behind a premium-income statistic.
 
-The Wheel returned 4.38%, compared with 17.43% for buy and hold and 14.83% for the
-matched covered call. It had lower volatility and drawdown, but a lower Sharpe.
-The thesis of improved Sharpe is not supported by this six-month sample.
+The page reports the current one-year results from book.json, including the
+benchmark comparisons and whether the improved-Sharpe thesis was supported.
+
+## One-year extension — November 3, 2026
+
+The sample now covers November 3, 2025–October 30, 2026 (52 complete weeks).
+Existing strike, funding and execution rules were retained without optimization.
+The exchange calendar handles closed Mondays, Thursday expirations when Friday
+is closed, and 13:00 closes on November 28 and December 24, 2025. Request times
+use America/New_York so winter and summer UTC offsets are correct. This is an
+extension of an in-sample study, not an independently selected out-of-sample test.

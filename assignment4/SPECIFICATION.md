@@ -5,14 +5,14 @@ simulation, not a claim that the rules were chosen before May. No optimization.
 
 ## Rules
 
-- AAPL, May 4–October 30, 2026; 26 complete weeks; $40,000 starting cash.
+- AAPL, November 3, 2025–October 30, 2026; 52 complete weeks; $40,000 starting cash.
 - At most one standard option (100 shares), and either zero or 100 shares.
 - Monday 09:59 New York stock print selects the contract. Order at 10:00.
   Flat: put strike = floor(0.99 * spot / 2.5) * 2.5. With shares:
   call strike = ceil(1.01 * spot / 2.5) * 2.5. A call can be below the stock's
   acquisition cost; losses are not hidden by refusing to sell below cost.
-- Expiry is the last exchange session of the same week. Closed Fridays June 19
-  and July 3 shift expiry to Thursday. Closed Mondays May 25 and September 7
+- Expiry is the last exchange session of the same week. Closed Fridays April 3, June 19
+  and July 3 shift expiry to Thursday. Closed Mondays January 19, February 16, May 25 and September 7
   skip that week's entry. No Tuesday catch-up.
 - Hold to expiry; no discretionary closes, stop losses or rolls. A missing or
   ineligible chosen contract skips the entry, with the reason recorded.
@@ -29,7 +29,7 @@ simulation, not a claim that the rules were chosen before May. No optimization.
   means modeled assignment; otherwise expire. Put assignment buys 100 shares at
   strike; call assignment sells 100 at strike. Remove the option simultaneously.
   Log the option event and linked stock event with atomic before/after states.
-  Effective book time 16:01 is a modeling convention, not an actual notice or
+  Effective book time one minute after close (16:01, or 13:01 on early closes) is a modeling convention, not an actual notice or
   settlement timestamp. No contrary exercise or after-hours pin-risk model.
 - Main case has no early assignment. Separate sensitivity assigns a short
   before expiry at 10:00 when prior 09:59 intrinsic value >0 and midpoint time
@@ -45,12 +45,12 @@ simulation, not a claim that the rules were chosen before May. No optimization.
 
 ## Marks and performance
 
-- Scheduled ledger: 10:00 and hourly through 16:00, plus every event. Portfolio
+- Scheduled ledger: 10:00 and hourly through the exchange close, plus every event. Portfolio
   viewer applies the last event at or before the requested timestamp, with
   before/after event selection. Quote timestamps are always shown separately.
 - Marks use latest valid bid/ask at or before observation, explicitly flagging
-  stale quotes. Stock at 16:00 uses its raw daily close. Option at expiry uses
-  intrinsic value immediately before the modeled 16:01 assignment/expiration.
+  stale quotes. Stock at the exchange close uses its raw daily close. Option at expiry uses
+  intrinsic value immediately before the modeled post-close assignment/expiration.
   No valid prior mark means stop, not a fabricated value.
 - NAV = cash + stock MV - short option liability + dividend receivable.
   Free cash = cash - put collateral. Validate cash, coverage and NAV at every
@@ -58,7 +58,7 @@ simulation, not a claim that the rules were chosen before May. No optimization.
 - Daily returns use post-expiry closing account values and initial $40,000.
   Report total return, dollar P&L, maximum daily drawdown, annualized daily
   volatility (sqrt(252)), and sample Sharpe (mean/std * sqrt(252), zero cash
-  reference rate). Half-year estimates are descriptive, not forward forecasts.
+  reference rate). One-year estimates are descriptive, not forward forecasts.
 - Thesis: premium may improve Sharpe and reduce volatility relative to 100
   shares plus idle cash, at a cost of missed upside. Test against actual results;
   lower exposure is not evidence of alpha. Show option, stock and dividend P&L,
@@ -77,3 +77,12 @@ model. Data access failures must not be disguised as economic no-trade decisions
 Sources: https://www.schwab.com/learn/story/three-things-to-know-about-wheel-strategy
 https://www.optionseducation.org/referencelibrary/faq/options-assignment
 https://www.nyse.com/trade/hours-calendars
+
+## One-year extension — November 3, 2026
+
+The sample now covers November 3, 2025–October 30, 2026 (52 complete weeks).
+Existing strike, funding and execution rules were retained without optimization.
+The exchange calendar handles closed Mondays, Thursday expirations when Friday
+is closed, and 13:00 closes on November 28 and December 24, 2025. Request times
+use America/New_York so winter and summer UTC offsets are correct. This is an
+extension of an in-sample study, not an independently selected out-of-sample test.
