@@ -7,7 +7,7 @@
   <title>FINTECH 535 · Wheel Strategy</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
-  <script src="assignment4/view.js?v=2" defer></script>
+  <script src="assignment4/view.js?v=year1" defer></script>
 </head>
 <body>
 <main class="backtest wheel">
@@ -18,7 +18,7 @@
     <a href="wheel.html" aria-current="page">Assignment 4: Wheel</a>
   </nav>
   <h1>Wheel Strategy</h1>
-  <p class="subtitle">AAPL · May 4–October 30, 2026 · Trades at 10:00 a.m. New York time</p>
+  <p class="subtitle">AAPL · November 3, 2025–October 30, 2026 · Trades at 10:00 a.m. New York time</p>
   <p>Sell a cash-secured put. If assigned, own 100 shares and sell covered calls. When the shares are called away, return to selling puts.</p>
   <p id="wheel-status" role="status">Loading saved LSEG results…</p>
   <noscript>Enable JavaScript to display the saved backtest.</noscript>
@@ -39,9 +39,9 @@
       <li><b>When holding cash:</b> each Monday, use the 09:59 stock print to select a put with K = floor(0.99 × S / 2.50) × 2.50. Sell one at 10:00 only if existing cash covers 100 × K plus the fee. Reserve the full strike amount.</li>
       <li><b>When holding 100 shares:</b> sell one call with K = ceil(1.01 × S / 2.50) × 2.50. The strike follows the current stock price and can be below acquisition cost. No uncovered calls or borrowing.</li>
       <li><b>Wait through expiry:</b> use that week's last exchange session. At least $0.01 in the money at the closing stock print means modeled assignment: a put buys 100 shares at K; a call sells them at K. Otherwise the option expires. Resume next Monday. No discretionary closes, stop losses or rolls.</li>
-      <li><b>Use only available information:</b> require valid signal and execution quotes, positive bid, spread ≤20% of midpoint, and quote age ≤60 seconds. Skip an unavailable chosen contract. Closed Mondays are skipped; June 19 and July 3 expiries shift to Thursday. Rules were fixed before calculating results, with no parameter search.</li>
+      <li><b>Use only available information:</b> require valid signal and execution quotes, positive bid, spread ≤20% of midpoint, and quote age ≤60 seconds. Skip an unavailable chosen contract. Closed Mondays are skipped; April 3, June 19 and July 3 expiries shift to Thursday. Rules were fixed before calculating results, with no parameter search.</li>
     </ol>
-    <p class="note">The covered-call benchmark buys 100 shares when flat and writes the same weekly call rule. Buy and hold purchases 100 shares at the first 10:00 ask. These comparisons use the same dates and funding; the prior assignment pages retain their original backtests.</p>
+    <p class="note">The covered-call benchmark buys 100 shares when flat and writes the same weekly call rule. Buy and hold purchases 100 shares at the first 10:00 ask. These comparisons use the same dates and funding; each assignment now covers the same 52-week window, with its own stated trading rules.</p>
   </section>
 
   <section aria-labelledby="nav-title">
@@ -69,7 +69,7 @@
     <details id="portfolio-details">
       <summary id="portfolio-title">Portfolio at a point in time</summary>
     <div class="controls portfolio-controls">
-      <label>New York date and time <input id="portfolio-time" type="datetime-local" min="2026-05-04T09:59" max="2026-10-30T16:01" step="60" value="2026-10-30T16:01"></label>
+      <label>New York date and time <input id="portfolio-time" type="datetime-local" min="2025-11-03T09:59" max="2026-10-30T16:01" step="60" value="2026-10-30T16:01"></label>
       <label>Event timing <select id="portfolio-side"><option value="after">After events at this time</option><option value="before">Before events at this time</option></select></label>
       <button id="show-portfolio" type="button">Show portfolio</button>
     </div>
@@ -77,7 +77,7 @@
     <p id="portfolio-status" role="status"></p>
     <div class="table-scroll portfolio-table" role="region" aria-label="Selected portfolio" tabindex="0"><table id="portfolio"><thead><tr><th>Account component</th><th>Position / value</th></tr></thead><tbody></tbody></table></div>
     <p id="portfolio-marks" class="note"></p>
-    <p class="note">Positions and cash reflect every booked event through the selected time. Valuations use the latest recorded mark at or before it; no prices are interpolated. Assignment and its stock transfer are one atomic event, with before/after states. The modeled expiry event is recorded at 16:01, not the actual broker notification or settlement time.</p>
+    <p class="note">Positions and cash reflect every booked event through the selected time. Valuations use the latest recorded mark at or before it; no prices are interpolated. Assignment and its stock transfer are one atomic event, with before/after states. The modeled expiry event is recorded one minute after the session close (16:01, or 13:01 on early-close days), not the actual broker notification or settlement time.</p>
     </details>
     <details id="ledger-details"><summary>Full ledger: hourly marks and every before/after event</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Full portfolio ledger"><table id="wheel-ledger"><thead><tr><th>Time (NY)</th><th>State</th><th>Cash</th><th>Shares</th><th>Short puts</th><th>Covered calls</th><th>Contract / strike / expiry</th><th>Put collateral</th><th>Free cash</th><th>Stock MV</th><th>Option MV</th><th>Dividend due</th><th>NAV</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
     <details><summary>Weekly entry decisions, including skips</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Weekly entry decisions"><table id="wheel-decisions"><thead><tr><th>Monday</th><th>Type</th><th>Strike</th><th>Expiry</th><th>Decision</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
@@ -111,10 +111,10 @@
       <div id="wheel-scatter" class="backtest-chart" aria-label="Option midpoint versus reported trade prices"></div>
       <p class="note">Only observations with valid bid/ask, a trade field and positive reported bar volume are included, for the contracts actually sold from entry through expiry. A high R² shows close price correspondence, not that midpoint orders would execute. The last trade and quote need not occur simultaneously; bid fills and the cost sensitivity remain the main evidence for the execution assumption.</p>
     </details>
-    <p>Volatility and Sharpe annualize daily returns using 252 sessions. This six-month sample does not establish long-run performance. A further test would use a separate bear or sideways period and interest on collateral at rates known at each date.</p>
+    <p>Volatility and Sharpe annualize daily returns using 252 sessions. This one-year sample does not establish long-run performance. A further test would use a separate bear or sideways period and interest on collateral at rates known at each date.</p>
     <p>The saved observations come from LSEG Workspace: one-minute stock and weekly-option quotes, raw daily stock closes, and dividend events. Contract identifiers follow a predetermined $2.50 strike grid and are accepted only with signal-time observations; this is not a complete historical options chain. The rule specification was frozen on November 1 before performance was calculated, not before the historical trading window.</p>
     <p id="wheel-quality"></p>
-    <p>Shares held entering the May 11 and August 10 ex-dates earn $0.27 each, accrued then paid May 14 and August 13. This includes $54 in the buy-and-hold benchmark. Cash interest, taxes, market impact and settlement delays are excluded. The main assignment model uses expiry intrinsic value; contrary exercise and after-hours pin risk are not modeled.</p>
+    <p>Shares held entering each ex-date earn the historical dividend, accrued on that date and paid on its payment date. The downloadable dividend file lists every event in the year. Cash interest, taxes, market impact and settlement delays are excluded. The main assignment model uses expiry intrinsic value; contrary exercise and after-hours pin risk are not modeled.</p>
     <p><a href="assignment4/quotes.csv" download>Input quotes CSV</a> · <a href="assignment4/dividends.csv" download>Dividends CSV</a> · <a href="assignment4/inputs.json" download>Contract metadata</a> · <a href="assignment4/data_manifest.json" download>Data manifest</a> · <a href="assignment4/SPECIFICATION.md">Frozen rules</a> · <a href="https://github.com/davidp0717/fintech535/tree/main/assignment4">Code and instructions</a></p>
     <pre><code>python3 -m pip install -r requirements.txt
 python3 assignment4/backtest.py
