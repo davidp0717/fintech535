@@ -7,7 +7,7 @@
   <title>FINTECH 535 · Wheel Strategy</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
-  <script src="assignment4/view.js" defer></script>
+  <script src="assignment4/view.js?v=2" defer></script>
 </head>
 <body>
 <main class="backtest wheel">
@@ -29,13 +29,12 @@
     <div class="table-scroll" role="region" aria-label="Strategy comparison" tabindex="0"><table id="comparison">
       <thead><tr><th>Strategy</th><th>Net P&amp;L</th><th>Account return</th><th>Max drawdown</th><th>Annualized volatility</th><th>Sharpe</th></tr></thead><tbody></tbody>
     </table></div>
-    <p class="note">Equal $40,000 accounts; one option contract and at most 100 shares; idle cash earns zero. Results include quoted spreads, option fees and earned dividends. Final holdings remain invested and are marked at the October 30 close. Drawdown uses daily closing NAV. Volatility and Sharpe annualize daily returns using 252 sessions; Sharpe uses a zero reference rate. This six-month sample does not establish long-run performance.</p>
+    <p class="note">Equal $40,000 accounts; returns include quoted spreads, option fees and dividends. Drawdown uses daily closing NAV; Sharpe uses a zero reference rate. Idle cash earns zero. Final shares remain invested and are marked at the October 30 close.</p>
     <p id="wheel-attribution"></p>
   </section>
 
   <section aria-labelledby="rules-title">
-    <h2 id="rules-title">Thesis and algorithm</h2>
-    <p><b>Thesis:</b> repeatedly selling short-dated options may earn enough premium to reduce volatility and improve Sharpe relative to holding 100 shares plus idle cash. The trade-off is less participation in rallies and substantial downside when assigned shares fall. The comparison above tests that claim, rather than assuming premium income is profit.</p>
+    <h2 id="rules-title">Algorithm</h2>
     <ol>
       <li><b>When holding cash:</b> each Monday, use the 09:59 stock print to select a put with K = floor(0.99 × S / 2.50) × 2.50. Sell one at 10:00 only if existing cash covers 100 × K plus the fee. Reserve the full strike amount.</li>
       <li><b>When holding 100 shares:</b> sell one call with K = ceil(1.01 × S / 2.50) × 2.50. The strike follows the current stock price and can be below acquisition cost. No uncovered calls or borrowing.</li>
@@ -52,12 +51,23 @@
     <p class="note">NAV = cash + stock value − short-option liability + dividend receivable. Put collateral is part of cash, not an expense. Free cash = cash − put collateral. Covered calls are secured by the 100 shares.</p>
   </section>
 
-  <section aria-labelledby="portfolio-title">
-    <h2 id="portfolio-title">Portfolio at a point in time</h2>
+  <section aria-labelledby="cost-title">
+    <h2 id="cost-title">Execution costs and assignment</h2>
+    <div class="table-scroll" role="region" aria-label="Execution and assignment sensitivity" tabindex="0"><table id="sensitivity"><thead><tr><th>Wheel fill / assignment assumption</th><th>Net P&amp;L</th><th>Account return</th></tr></thead><tbody></tbody></table></div>
+
+  </section>
+
+  <section aria-labelledby="records-title">
+    <h2 id="records-title">Trades and account records</h2>
     <label class="ledger-control">Account <select id="wheel-account">
       <option value="wheel">Wheel — main result</option><option value="covered_call">Covered call</option><option value="buy_hold">Buy and hold</option>
       <option value="midpoint">Wheel — midpoint fills</option><option value="adverse">Wheel — adverse fills</option><option value="early_assignment">Wheel — early assignment</option>
     </select></label>
+    <p id="wheel-record-count"></p>
+    <p><a href="assignment4/blotter.csv" download>Wheel trade CSV</a> · <a href="assignment4/ledger.csv" download>Wheel ledger CSV</a> · <a href="assignment4/book.json" download>All accounts and scenarios (JSON)</a></p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Trade blotter"><table id="wheel-blotter"><caption>Selected account above; option quantity is contracts, stock quantity is shares. Click an event number to inspect its resulting portfolio.</caption><thead><tr><th>Event</th><th>Time (NY)</th><th>Instrument</th><th>Action</th><th>Qty</th><th>Strike / expiry</th><th>Bid / ask</th><th>Fill</th><th>Fee</th><th>Cash change</th><th>Cash after row</th><th>Reason</th></tr></thead><tbody></tbody></table></div>
+    <details id="portfolio-details">
+      <summary id="portfolio-title">Portfolio at a point in time</summary>
     <div class="controls portfolio-controls">
       <label>New York date and time <input id="portfolio-time" type="datetime-local" min="2026-05-04T09:59" max="2026-10-30T16:01" step="60" value="2026-10-30T16:01"></label>
       <label>Event timing <select id="portfolio-side"><option value="after">After events at this time</option><option value="before">Before events at this time</option></select></label>
@@ -68,11 +78,31 @@
     <div class="table-scroll portfolio-table" role="region" aria-label="Selected portfolio" tabindex="0"><table id="portfolio"><thead><tr><th>Account component</th><th>Position / value</th></tr></thead><tbody></tbody></table></div>
     <p id="portfolio-marks" class="note"></p>
     <p class="note">Positions and cash reflect every booked event through the selected time. Valuations use the latest recorded mark at or before it; no prices are interpolated. Assignment and its stock transfer are one atomic event, with before/after states. The modeled expiry event is recorded at 16:01, not the actual broker notification or settlement time.</p>
+    </details>
+    <details id="ledger-details"><summary>Full ledger: hourly marks and every before/after event</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Full portfolio ledger"><table id="wheel-ledger"><thead><tr><th>Time (NY)</th><th>State</th><th>Cash</th><th>Shares</th><th>Short puts</th><th>Covered calls</th><th>Contract / strike / expiry</th><th>Put collateral</th><th>Free cash</th><th>Stock MV</th><th>Option MV</th><th>Dividend due</th><th>NAV</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
+    <details><summary>Weekly entry decisions, including skips</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Weekly entry decisions"><table id="wheel-decisions"><thead><tr><th>Monday</th><th>Type</th><th>Strike</th><th>Expiry</th><th>Decision</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
   </section>
 
-  <section aria-labelledby="cost-title">
-    <h2 id="cost-title">Execution costs and assignment</h2>
-    <div class="table-scroll" role="region" aria-label="Execution and assignment sensitivity" tabindex="0"><table id="sensitivity"><thead><tr><th>Wheel scenario</th><th>Net P&amp;L</th><th>Account return</th><th>Sharpe</th></tr></thead><tbody></tbody></table></div>
+  <section aria-labelledby="interpretation-title">
+    <h2 id="interpretation-title">Interpretation</h2>
+    <p id="wheel-interpretation"></p>
+    <p>The wheel earns option premium while alternating between cash and shares. A conventional covered call starts with stock; the wheel first sells a put and can miss a rally while waiting for assignment. Once shares are acquired, both strategies sell calls and give up upside above the strike. The wheel fits a willingness to buy at the put strike and sell at the call strike, with sufficient cash reserved. Premium cushions losses but does not remove stock downside, and selling calls below acquisition cost can lock in a loss.</p>
+    <div class="table-scroll greeks-table" role="region" aria-label="Greeks across the wheel cycle" tabindex="0">
+      <table id="wheel-greeks">
+        <thead><tr><th>Greek</th><th>Cash-secured put phase</th><th>Covered-call phase</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Delta<br>Stock-price sensitivity</th><td>Positive delta from the short put: the position benefits from a stock-price rise, all else equal.</td><td>Positive exposure from 100 shares, reduced by the short call. Upside is capped at expiry.</td></tr>
+          <tr><th scope="row">Theta<br>Time decay</th><td>Decay of the put's time value helps the seller, other inputs unchanged.</td><td>Decay of the call's time value helps; shares have no option time decay.</td></tr>
+          <tr><th scope="row">Vega<br>Volatility sensitivity</th><td>Negative vega: higher implied volatility increases the short put's value and liability.</td><td>Negative vega from the short call: higher implied volatility increases its liability.</td></tr>
+          <tr><th scope="row">Gamma<br>How delta changes</th><td>Negative gamma from the short put. A large stock move can outweigh the premium collected.</td><td>Shares have zero gamma; the short call makes net gamma negative.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">These are structural exposures while an option is open, not measured historical Greeks. This backtest does not decompose P&amp;L into delta, time decay and volatility effects.</p>
+  </section>
+
+  <details id="data-details"><summary>Data, sources, and how to reproduce</summary>
+    <p id="wheel-source"></p>
     <p>Option sales fill at the observed bid; purchases, if required, at the ask. Each option transaction costs $0.65. Midpoint and adverse fills (an extra 10% of spread beyond bid/ask) rerun the same entries. These are simulated prices from one-minute, end-labeled bars; available size and actual executions are not observed. Stock transactions and assignments have no assumed fee.</p>
     <p id="wheel-spreads"></p>
     <p id="wheel-assignment"></p>
@@ -81,26 +111,7 @@
       <div id="wheel-scatter" class="backtest-chart" aria-label="Option midpoint versus reported trade prices"></div>
       <p class="note">Only observations with valid bid/ask, a trade field and positive reported bar volume are included, for the contracts actually sold from entry through expiry. A high R² shows close price correspondence, not that midpoint orders would execute. The last trade and quote need not occur simultaneously; bid fills and the cost sensitivity remain the main evidence for the execution assumption.</p>
     </details>
-  </section>
-
-  <section aria-labelledby="records-title">
-    <h2 id="records-title">Trades and account records</h2>
-    <p id="wheel-record-count"></p>
-    <p><a href="assignment4/blotter.csv" download>Wheel trade CSV</a> · <a href="assignment4/ledger.csv" download>Wheel ledger CSV</a> · <a href="assignment4/book.json" download>All accounts and scenarios (JSON)</a></p>
-    <div class="table-scroll" tabindex="0" role="region" aria-label="Trade blotter"><table id="wheel-blotter"><caption>Selected account above; option quantity is contracts, stock quantity is shares. Click an event number to inspect its resulting portfolio.</caption><thead><tr><th>Event</th><th>Time (NY)</th><th>Instrument</th><th>Action</th><th>Qty</th><th>Strike / expiry</th><th>Bid / ask</th><th>Fill</th><th>Fee</th><th>Cash change</th><th>Cash after row</th><th>Reason</th></tr></thead><tbody></tbody></table></div>
-    <details id="ledger-details"><summary>Full ledger: hourly marks and every before/after event</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Full portfolio ledger"><table id="wheel-ledger"><thead><tr><th>Time (NY)</th><th>State</th><th>Cash</th><th>Shares</th><th>Short puts</th><th>Covered calls</th><th>Contract / strike / expiry</th><th>Put collateral</th><th>Free cash</th><th>Stock MV</th><th>Option MV</th><th>Dividend due</th><th>NAV</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
-    <details><summary>Weekly entry decisions, including skips</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Weekly entry decisions"><table id="wheel-decisions"><thead><tr><th>Monday</th><th>Type</th><th>Strike</th><th>Expiry</th><th>Decision</th><th>Reason</th></tr></thead><tbody></tbody></table></div></details>
-  </section>
-
-  <section aria-labelledby="interpretation-title">
-    <h2 id="interpretation-title">Interpretation</h2>
-    <p id="wheel-interpretation"></p>
-    <p>The wheel is bullish and short volatility in both phases. A short put has positive delta; after assignment, the covered call keeps positive stock exposure but caps upside. Both short options benefit from time decay, all else equal, and have negative gamma and vega. A large price move can overwhelm several weeks of premium. The put phase can miss a rally while waiting to buy, and selling calls after a drop can lock in a loss when shares rebound.</p>
-    <p>This implementation may suit a willingness to buy the stock at the put strike and sell it at the call strike, with cash reserved throughout. It did not improve Sharpe here. A useful next test would include a separately held-out bear or sideways period and interest on collateral using a rate known at each date. Changing strikes after seeing these results would need a new out-of-sample test.</p>
-  </section>
-
-  <details><summary>Data, sources, and how to reproduce</summary>
-    <p id="wheel-source"></p>
+    <p>Volatility and Sharpe annualize daily returns using 252 sessions. This six-month sample does not establish long-run performance. A further test would use a separate bear or sideways period and interest on collateral at rates known at each date.</p>
     <p>The saved observations come from LSEG Workspace: one-minute stock and weekly-option quotes, raw daily stock closes, and dividend events. Contract identifiers follow a predetermined $2.50 strike grid and are accepted only with signal-time observations; this is not a complete historical options chain. The rule specification was frozen on November 1 before performance was calculated, not before the historical trading window.</p>
     <p id="wheel-quality"></p>
     <p>Shares held entering the May 11 and August 10 ex-dates earn $0.27 each, accrued then paid May 14 and August 13. This includes $54 in the buy-and-hold benchmark. Cash interest, taxes, market impact and settlement delays are excluded. The main assignment model uses expiry intrinsic value; contrary exercise and after-hours pin risk are not modeled.</p>

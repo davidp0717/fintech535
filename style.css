@@ -62,5 +62,9 @@ select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px soli
 .wheel #portfolio-record { width: 100%; max-width: 100%; }
 .wheel .portfolio-table { max-height: none; }
 .wheel #portfolio td { white-space: normal; overflow-wrap: anywhere; }
+.wheel .greeks-table { max-height: none; }
+.wheel #wheel-greeks th, .wheel #wheel-greeks td { white-space: normal; }
+.wheel #wheel-greeks tbody th { position: static; width: 18%; }
+.wheel #wheel-greeks td { width: 41%; min-width: 180px; }
 .wheel .event-link { border: 0; color: #194e73; text-decoration: underline; padding: 0 6px; min-height: 32px; }
 @media (max-width: 600px) { .wheel .ledger-control { align-items: flex-start; flex-direction: column; } .wheel select, .wheel input { max-width: 100%; } }
