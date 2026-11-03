@@ -73,9 +73,9 @@ function showSummary() {
     `${s.negative_available} hourly records have negative available funds; ${s.negative_excess} have negative excess equity. ` +
     `${s.stale_marks} records use a carried option mark.`);
   text('outcomes', `${s.entered} calls were sold: ${s.assigned} ended in assignment and ${s.expired} expired with shares retained. ` +
-    `The September 7 holiday week was skipped because there was no Monday entry bar. The final account is flat, with ${money(s.final_nav)} in cash.`);
+    `${BOOK.decisions.filter(d=>d.status!=='Entered').length} weeks were skipped; the table lists each reason. The final account holds ${BOOK.ledger.at(-1).shares} shares and ${money(BOOK.ledger.at(-1).cash)} cash.`);
   text('pnl-analysis', `The strategy collected ${money(s.premium)} in premiums, but premiums are not the same as profit. ` +
-    `The stock purchases and assignment deliveries contributed ${money(profit - s.premium)}, leaving a net model gain of ${money(profit)}. ` +
+    `The stock component, including ending shares at market value, contributed ${money(profit - s.premium)}, leaving a net model P&L of ${money(profit)}. ` +
     `This illustrates the downside that remains in a covered call even as the premium cushions the loss.`);
   const fit = BOOK.regression;
   text('fit', fit ? `Linear fit: trade = ${fit.slope.toFixed(4)} × mid ${fit.intercept < 0 ? '−' : '+'} ${Math.abs(fit.intercept).toFixed(4)}. ` +

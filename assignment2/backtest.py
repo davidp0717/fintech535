@@ -9,6 +9,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from market_calendar import close_clock
+START, END = '2025-11-03', '2026-10-30'
 ROOT = Path(__file__).parent
 INITIAL_CASH = 40000.0
 MULTIPLIER = 100
@@ -55,7 +57,7 @@ def simulate(weeks, initial_cash=INITIAL_CASH):
 
     for week in weeks:
         entry = pd.Timestamp(week['monday'] + ' 11:00', tz='America/New_York')
-        expiry_time = pd.Timestamp(week['expiry'] + ' 16:00', tz='America/New_York')
+        expiry_time = pd.Timestamp(week['expiry'] + ' ' + close_clock(week['expiry']), tz='America/New_York')
         stock = week['stock']
         options = week['options']
         # A failed call request stays a missing candidate, not a zero-price option.
@@ -120,14 +122,14 @@ def simulate(weeks, initial_cash=INITIAL_CASH):
                     symbol = occ_symbol(week['expiry'], strike)
                     if spot > strike:
                         book(time, short_call['ric'], 'ASSIGN', 1, 0, 0,
-                             f'Friday close {spot:.4f} > strike {strike:g}; physically settle call', occ=symbol)
+                             f'Expiry close {spot:.4f} > strike {strike:g}; physically settle call', occ=symbol)
                         book(time, 'AAPL.O', 'SELL', 100, strike, 100 * strike,
                              'Deliver the 100 covered shares at strike; account is now flat')
                         shares = 0
                         decision['outcome'] = 'Assigned'
                     else:
                         book(time, short_call['ric'], 'EXPIRE', 1, 0, 0,
-                             f'Friday close {spot:.4f} <= strike {strike:g}; retain shares', occ=symbol)
+                             f'Expiry close {spot:.4f} <= strike {strike:g}; retain shares', occ=symbol)
                         decision['outcome'] = 'Expired'
                     short_call, last_mid, last_quote_time = None, None, None
 
@@ -186,17 +188,17 @@ def validate(result):
 
 
 def main():
-    mondays = pd.date_range('2026-07-13', periods=10, freq='W-MON')
+    mondays = pd.date_range(START, END, freq='W-MON')
     weeks = [pd.read_pickle(ROOT / 'cache' / f'{m:%Y-%m-%d}.pkl') for m in mondays]
     result = simulate(weeks)
     validate(result)
     result['regression'] = regression(result['scatter'])
     result['source'] = {'provider': 'LSEG Workspace', 'ticker': 'AAPL.O',
-                        'start': '2026-07-13', 'end': '2026-09-18',
+                        'start': START, 'end': END,
                         'fetched_at': max(w['fetched_at'] for w in weeks),
                         'interval': 'hourly; explicitly end-labeled; New York time',
                         'contracts_with_data': sum(bool(c['ric']) for w in weeks for c in w['options']),
-                        'split_check': pd.read_pickle(ROOT / 'cache' / 'split_check.pkl')['status']}
+                        'split_check': pd.read_pickle(ROOT / 'cache' / 'split_check-year.pkl')['status']}
     result['summary'] = {
         'final_nav': result['ledger'][-1]['nav'],
         'return_pct': 100 * (result['ledger'][-1]['nav'] / INITIAL_CASH - 1),

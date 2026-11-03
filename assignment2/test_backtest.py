@@ -17,6 +17,15 @@ def week(monday, entry_spot=99, expiry_spot=101, strike=100, bid=1, ask=3):
 
 
 class Rules(unittest.TestCase):
+    def test_early_close_settles_using_1300_print(self):
+        sample=week('2025-11-24')
+        for frame in [sample['stock'],sample['options'][0]['bars']]:
+            frame.index=pd.DatetimeIndex([frame.index[0],frame.index[-1].replace(hour=13)])
+        result=simulate([sample],10000)
+        self.assertEqual(result['blotter'][-1]['time'],'2025-11-28T13:00:00-05:00')
+        self.assertEqual(result['ledger'][-1]['short_calls'],0)
+        validate(result)
+
     def test_assignment_books_delivery_and_finishes_flat(self):
         result = simulate([week('2026-07-13')], initial_cash=10000)
         self.assertEqual([r['side'] for r in result['blotter']], ['BUY', 'SELL', 'ASSIGN', 'SELL'])

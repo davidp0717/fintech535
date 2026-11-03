@@ -7,7 +7,7 @@ No server-side Python or live LSEG connection runs on GitHub Pages.
 
 ## Read in this order
 
-1. `download.py`: fetch ten weeks of hourly stock and nearby call history from LSEG.
+1. `download.py`: fetch 52 weeks of hourly stock and nearby call history from LSEG.
 2. `backtest.py`: walk the history, book trades, update cash and positions, calculate margin.
 3. `../covered-call.html`: the rules, charts, tables, and analysis.
 4. `view.js`: display the saved `book.js` results using Plotly and ordinary DOM functions.
@@ -27,7 +27,7 @@ Use the root requirements.txt to install dependencies in the local .venv.
 
 Open http://localhost:8000/covered-call.html.
 The download caches each week in `assignment2/cache`. Move this directory aside
-before deliberately refreshing the fixed July 13–September 18, 2026 snapshot.
+before deliberately refreshing the fixed November 3, 2025–October 30, 2026 snapshot.
 Do not load untrusted pickle files. Caches and credentials are excluded from Git.
 
 ## Strategy and accounting
@@ -39,7 +39,7 @@ If flat, buy 100 shares. Sell one call expiring that Friday at the same hourly
 bar's valid bid/ask midpoint. If either price or sufficient Reg T initial equity
 is missing, skip both new legs. Existing shares remain. Skip Monday holidays.
 
-Wait until Friday at 16:00. Above the strike, remove the call and sell the covered
+Wait until the expiry session closes, normally 16:00 (13:00 on an early close). Above the strike, remove the call and sell the covered
 shares at the strike. At or below strike, expire the call and retain the shares.
 No rolling, buy-to-close, or early assignment. Missing expiry stock data stops
 the calculation. No cash movement occurs outside a booked blotter event.
@@ -59,7 +59,7 @@ These are the assignment's simplified account formulas.
   when a positive trade price exists.
 - Entry requires current-bar valid quotes (0 <= bid <= ask and ask > 0).
   No prior quote can fill a new order. Valuation may carry the last valid quote
-  with its age disclosed; the actual run uses no carried option marks.
+  with its age disclosed; the page reports the count of carried option marks.
 - Last trades and quotes within the same hourly bar can occur at different times.
   Midpoint executions are simulated, not verified real limit fills.
 - Expired RIC lookup tries zero-padded days and archived/base forms. The saved
@@ -76,3 +76,12 @@ These are the assignment's simplified account formulas.
 Publish `book.js`, `view.js`, the three CSV exports, and source code along with
 root `covered-call.html`, navigation, and CSS. The original assignment stays
 on `index.html`. Tests use artificial fixtures only; published results use LSEG.
+
+## One-year extension — November 3, 2026
+
+The sample now covers November 3, 2025–October 30, 2026 (52 complete weeks).
+Existing strike, funding and execution rules were retained without optimization.
+The exchange calendar handles closed Mondays, Thursday expirations when Friday
+is closed, and 13:00 closes on November 28 and December 24, 2025. Request times
+use America/New_York so winter and summer UTC offsets are correct. This is an
+extension of an in-sample study, not an independently selected out-of-sample test.

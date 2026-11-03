@@ -1,4 +1,4 @@
-"""Download the ten-week AAPL tape. Keep Workspace open and signed in.
+"""Download the one-year AAPL tape. Keep Workspace open and signed in.
 Run from fintech535: .venv/bin/python assignment2/download.py
 Each week's pickle is saved locally so an interrupted download can resume.
 """
@@ -12,7 +12,9 @@ import pandas as pd
 from lseg.data.content.historical_pricing import summaries
 
 FOLDER = Path(__file__).parent / 'cache'
-MONDAYS = pd.date_range('2026-07-13', periods=10, freq='W-MON')
+from market_calendar import expiry_day, close_clock
+START, END = '2025-11-03', '2026-10-30'
+MONDAYS = pd.date_range(START, END, freq='W-MON')
 FIELDS = ['BID', 'ASK', 'TRDPRC_1', 'ACVOL_UNS', 'NUM_MOVES']
 
 
@@ -20,7 +22,9 @@ def get_bars(ric, monday, friday):
     """Request end-labeled UTC hours, then keep regular-session US stock hours."""
     response = summaries.Definition(
         universe=ric, fields=FIELDS, interval='PT1H',
-        start=f'{monday:%Y-%m-%d}T13:30:00Z', end=f'{friday:%Y-%m-%d}T20:00:00Z',
+        start=pd.Timestamp(f'{monday:%Y-%m-%d} 09:30', tz='America/New_York').tz_convert('UTC').isoformat(),
+        end=pd.Timestamp(f'{friday:%Y-%m-%d} 16:00', tz='America/New_York').tz_convert('UTC').isoformat(),
+        count=10000,
         adjustments='exchangeCorrection',
         extended_params={'summaryTimestampLabel': 'endPeriod'}).get_data()
     frame = response.data.df
@@ -34,14 +38,14 @@ def get_bars(ric, monday, friday):
             raise ValueError(f'Conflicting duplicate bars: {ric} {timestamp}')
     frame = frame.loc[~frame.index.duplicated()].sort_index()
     frame = frame.between_time('10:00', '16:00')
-    return frame.loc[frame.index.dayofweek < 5]
+    return frame.loc[(frame.index.dayofweek < 5) & [t.strftime('%H:%M') <= close_clock(t.date()) for t in frame.index]]
 
 
 def ric_candidates(expiry, strike):
     """Try the documented form, zero-padded day, and not-yet-archived form."""
     month = chr(64 + expiry.month)
     rics = []
-    for day in [str(expiry.day), f'{expiry.day:02d}']:
+    for day in [f'{expiry.day:02d}', str(expiry.day)]:
         base = f'AAPL{month}{day}{expiry:%y}{round(strike * 100):05d}.U'
         for ric in [f'{base}^{month}{expiry:%y}', base]:
             if ric not in rics:
@@ -54,17 +58,17 @@ def main():
     warnings.filterwarnings('ignore', category=FutureWarning, module='lseg.data')
     ld.open_session(name='desktop.workspace')
     try:
-        if not (FOLDER / 'split_check.pkl').exists():
+        if not (FOLDER / 'split_check-year.pkl').exists():
             raw = ld.get_history('AAPL.O', fields=['TRDPRC_1'], interval='daily',
-                                 start='2026-07-13', end='2026-09-18', adjustments='unadjusted')
+                                 start='2025-11-02', end=END, adjustments='unadjusted')
             adjusted = ld.get_history('AAPL.O', fields=['TRDPRC_1'], interval='daily',
-                                      start='2026-07-13', end='2026-09-18', adjustments='CCH')
+                                      start='2025-11-02', end=END, adjustments='CCH')
             pair = pd.concat([raw.iloc[:, 0], adjusted.iloc[:, 0]], axis=1).dropna()
             if pair.empty or not (pair.iloc[:, 0] - pair.iloc[:, 1]).abs().lt(.00001).all():
                 raise RuntimeError('Stock capital-change check failed; investigate before continuing')
-            pd.to_pickle({'status': 'CCH-adjusted and raw closes match', 'dates': len(pair)}, FOLDER / 'split_check.pkl')
+            pd.to_pickle({'status': 'CCH-adjusted and raw closes match', 'dates': len(pair)}, FOLDER / 'split_check-year.pkl')
         for monday in MONDAYS:
-            friday = monday + pd.Timedelta(days=4)
+            friday = pd.Timestamp(expiry_day(monday))
             filename = FOLDER / f'{monday:%Y-%m-%d}.pkl'
             if filename.exists():
                 print(f'Reusing {filename.name}', flush=True)
@@ -91,6 +95,8 @@ def main():
                             contract.update({'ric': ric, 'bars': bars})
                             break
                         except ld.errors.LDError as error:
+                            if any(x in str(error).lower() for x in ['not entitled','access denied','unauthorized','401','403','connection','session','timeout']):
+                                raise
                             result['request_errors'].append({'ric': ric, 'reason': str(error)[:300]})
                     result['options'].append(contract)
                     print(f'{monday:%m-%d} strike {strike:g}: {contract["ric"] or "unavailable"}', flush=True)
