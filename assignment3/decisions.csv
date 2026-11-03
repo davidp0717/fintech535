@@ -1,4 +1,40 @@
 week,expiry,strike,ric,status,reason,exit
+2025-11-03,2025-11-07,277.5,AAPLK072527750.U^K25,Entered,Valid signal and execution quotes; fully paid backing position,2025-11-07T10:00:00-05:00
+2025-11-10,2025-11-14,282.5,AAPLK142528250.U^K25,Entered,Valid signal and execution quotes; fully paid backing position,2025-11-14T10:00:00-05:00
+2025-11-17,2025-11-21,280.0,AAPLK212528000.U^K25,Entered,Valid signal and execution quotes; fully paid backing position,2025-11-21T10:00:00-05:00
+2025-11-24,2025-11-28,282.5,AAPLK282528250.U^K25,Entered,Valid signal and execution quotes; fully paid backing position,2025-11-28T10:00:00-05:00
+2025-12-01,2025-12-05,287.5,AAPLL052528750.U^L25,Entered,Valid signal and execution quotes; fully paid backing position,2025-12-05T10:00:00-05:00
+2025-12-08,2025-12-12,287.5,AAPLL122528750.U^L25,Entered,Valid signal and execution quotes; fully paid backing position,2025-12-12T10:00:00-05:00
+2025-12-15,2025-12-19,285.0,AAPLL192528500.U^L25,Entered,Valid signal and execution quotes; fully paid backing position,2025-12-19T10:00:00-05:00
+2025-12-22,2025-12-26,282.5,AAPLL262528250.U^L25,Entered,Valid signal and execution quotes; fully paid backing position,2025-12-26T10:00:00-05:00
+2025-12-29,2026-01-02,282.5,AAPLA022628250.U^A26,Entered,Valid signal and execution quotes; fully paid backing position,2026-01-02T10:00:00-05:00
+2026-01-05,2026-01-09,280.0,AAPLA092628000.U^A26,Entered,Valid signal and execution quotes; fully paid backing position,2026-01-09T10:00:00-05:00
+2026-01-12,2026-01-16,267.5,AAPLA162626750.U^A26,Entered,Valid signal and execution quotes; fully paid backing position,2026-01-16T10:00:00-05:00
+2026-01-19,2026-01-23,,,Skipped,No Monday 09:59 signal (holiday or missing bar),
+2026-01-26,2026-01-30,262.5,AAPLA302626250.U^A26,Entered,Valid signal and execution quotes; fully paid backing position,2026-01-30T10:00:00-05:00
+2026-02-02,2026-02-06,272.5,AAPLB062627250.U^B26,Entered,Valid signal and execution quotes; fully paid backing position,2026-02-06T10:00:00-05:00
+2026-02-09,2026-02-13,282.5,AAPLB132628250.U^B26,Entered,Valid signal and execution quotes; fully paid backing position,2026-02-13T10:00:00-05:00
+2026-02-16,2026-02-20,,,Skipped,No Monday 09:59 signal (holiday or missing bar),
+2026-02-23,2026-02-27,275.0,AAPLB272627500.U^B26,Entered,Valid signal and execution quotes; fully paid backing position,2026-02-27T10:00:00-05:00
+2026-03-02,2026-03-06,272.5,AAPLC062627250.U^C26,Entered,Valid signal and execution quotes; fully paid backing position,2026-03-06T10:00:00-05:00
+2026-03-09,2026-03-13,265.0,AAPLC132626500.U^C26,Entered,Valid signal and execution quotes; fully paid backing position,2026-03-13T10:00:00-04:00
+2026-03-16,2026-03-20,262.5,AAPLC202626250.U^C26,Entered,Valid signal and execution quotes; fully paid backing position,2026-03-20T10:00:00-04:00
+2026-03-23,2026-03-27,260.0,AAPLC272626000.U^C26,Entered,Valid signal and execution quotes; fully paid backing position,2026-03-27T10:00:00-04:00
+2026-03-30,2026-04-02,257.5,AAPLD022625750.U^D26,Entered,Valid signal and execution quotes; fully paid backing position,2026-04-02T10:00:00-04:00
+2026-04-06,2026-04-10,267.5,AAPLD102626750.U^D26,Entered,Valid signal and execution quotes; fully paid backing position,2026-04-10T10:00:00-04:00
+2026-04-13,2026-04-17,267.5,AAPLD172626750.U^D26,Entered,Valid signal and execution quotes; fully paid backing position,2026-04-17T10:00:00-04:00
+2026-04-20,2026-04-24,282.5,AAPLD242628250.U^D26,Entered,Valid signal and execution quotes; fully paid backing position,2026-04-24T10:00:00-04:00
+2026-04-27,2026-05-01,277.5,AAPLE012627750.U^E26,Entered,Valid signal and execution quotes; fully paid backing position,2026-05-01T10:00:00-04:00
+2026-05-04,2026-05-08,285.0,AAPLE082628500.U^E26,Entered,Valid signal and execution quotes; fully paid backing position,2026-05-08T10:00:00-04:00
+2026-05-11,2026-05-15,302.5,AAPLE152630250.U^E26,Entered,Valid signal and execution quotes; fully paid backing position,2026-05-15T10:00:00-04:00
+2026-05-18,2026-05-22,307.5,AAPLE222630750.U^E26,Entered,Valid signal and execution quotes; fully paid backing position,2026-05-22T10:00:00-04:00
+2026-05-25,2026-05-29,,,Skipped,No Monday 09:59 signal (holiday or missing bar),
+2026-06-01,2026-06-05,320.0,AAPLF052632000.U^F26,Entered,Valid signal and execution quotes; fully paid backing position,2026-06-05T10:00:00-04:00
+2026-06-08,2026-06-12,322.5,AAPLF122632250.U^F26,Entered,Valid signal and execution quotes; fully paid backing position,2026-06-12T10:00:00-04:00
+2026-06-15,2026-06-18,305.0,AAPLF182630500.U^F26,Entered,Valid signal and execution quotes; fully paid backing position,2026-06-18T10:00:00-04:00
+2026-06-22,2026-06-26,312.5,AAPLF262631250.U^F26,Entered,Valid signal and execution quotes; fully paid backing position,2026-06-26T10:00:00-04:00
+2026-06-29,2026-07-02,292.5,AAPLG022629250.U^G26,Entered,Valid signal and execution quotes; fully paid backing position,2026-07-02T10:00:00-04:00
+2026-07-06,2026-07-10,320.0,AAPLG102632000.U^G26,Entered,Valid signal and execution quotes; fully paid backing position,2026-07-10T10:00:00-04:00
 2026-07-13,2026-07-17,332.5,AAPLG172633250.U^G26,Entered,Valid signal and execution quotes; fully paid backing position,2026-07-17T10:00:00-04:00
 2026-07-20,2026-07-24,340.0,AAPLG242634000.U^G26,Entered,Valid signal and execution quotes; fully paid backing position,2026-07-24T10:00:00-04:00
 2026-07-27,2026-07-31,347.5,AAPLG312634750.U^G26,Entered,Valid signal and execution quotes; fully paid backing position,2026-07-31T10:00:00-04:00
@@ -11,3 +47,7 @@ week,expiry,strike,ric,status,reason,exit
 2026-09-14,2026-09-18,345.0,AAPLI182634500.U^I26,Entered,Valid signal and execution quotes; fully paid backing position,2026-09-18T10:00:00-04:00
 2026-09-21,2026-09-25,347.5,AAPLI252634750.U^I26,Entered,Valid signal and execution quotes; fully paid backing position,2026-09-25T10:00:00-04:00
 2026-09-28,2026-10-02,352.5,AAPLJ022635250.U^J26,Entered,Valid signal and execution quotes; fully paid backing position,2026-10-02T10:00:00-04:00
+2026-10-05,2026-10-09,345.0,AAPLJ092634500.U^J26,Entered,Valid signal and execution quotes; fully paid backing position,2026-10-09T10:00:00-04:00
+2026-10-12,2026-10-16,352.5,AAPLJ162635250.U^J26,Entered,Valid signal and execution quotes; fully paid backing position,2026-10-16T10:00:00-04:00
+2026-10-19,2026-10-23,357.5,AAPLJ232635750.U^J26,Entered,Valid signal and execution quotes; fully paid backing position,2026-10-23T10:00:00-04:00
+2026-10-26,2026-10-30,355.0,AAPLJ302635500.U^J26,Entered,Valid signal and execution quotes; fully paid backing position,2026-10-30T10:00:00-04:00

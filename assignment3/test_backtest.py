@@ -21,9 +21,18 @@ def fixture():
 
 class BacktestTests(unittest.TestCase):
     def setUp(self):
+        self.start = patch.object(bt,'START','2026-07-13'); self.start.start()
+        self.addCleanup(self.start.stop)
         self.end = patch.object(bt,'END','2026-07-17'); self.end.start()
         self.capital = patch.object(bt,'INITIAL_CASH',20000.); self.capital.start()
         self.addCleanup(self.end.stop); self.addCleanup(self.capital.stop)
+
+    def test_thursday_expiry_closes_before_holiday_friday(self):
+        weeks=fixture()
+        weeks[0]['short']['expiry']='2026-07-16'
+        result=bt.simulate(weeks,[])
+        close=next(e for e in result['blotter'] if e['leg']=='short_call' and e['side']=='BUY')
+        self.assertTrue(close['time'].startswith('2026-07-16T10:00'))
 
     def test_profit_and_cash_identity(self):
         r=bt.simulate(fixture(),[])

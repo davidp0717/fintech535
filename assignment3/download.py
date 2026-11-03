@@ -11,6 +11,7 @@ from pathlib import Path
 import lseg.data as ld
 import pandas as pd
 from lseg.data.content.historical_pricing import summaries
+from market_calendar import expiry_day
 from config import START, END, LONG_EXPIRY, LONG_MONEYNESS, SHORT_MONEYNESS, LONG_GRID, SHORT_GRID, TZ
 
 ROOT = Path(__file__).parent
@@ -34,6 +35,8 @@ def fetch(ric, monday, friday):
         if df is None or df.empty:
             return pd.DataFrame(columns=FIELDS)
     except ld.errors.LDError as error:
+        if any(x in str(error).lower() for x in ['not entitled','access denied','unauthorized','401','403','connection','session','timeout']):
+            raise
         print(f'Unavailable {ric}: {str(error)[:110]}', flush=True)
         return pd.DataFrame(columns=FIELDS)
     df = df.reindex(columns=FIELDS).apply(pd.to_numeric, errors='coerce')
@@ -53,7 +56,7 @@ def candidates(expiry, strike):
     month = chr(64 + expiry.month)
     for day in dict.fromkeys([f'{expiry.day:02d}', str(expiry.day)]):
         base = f'AAPL{month}{day}{expiry:%y}{round(strike * 100):05d}.U'
-        if expiry.date() < dt.date(2026, 10, 9):
+        if expiry.date() < dt.datetime.now(dt.timezone.utc).date():
             yield base + f'^{month}{expiry:%y}'
         yield base
 
@@ -79,7 +82,7 @@ def main():
     try:
         dividends = ld.get_data('AAPL.O', ['TR.DivExDate', 'TR.DivPayDate',
             'TR.DivUnadjustedGross', 'TR.DivAnnouncementDate'],
-            parameters={'SDate': START, 'EDate': END})
+            parameters={'SDate': START, 'EDate': END, 'DateType': 'ED', 'CAEventType': 'SDI'})
         dividends.to_pickle(CACHE / 'dividends.pkl')
         pd.to_pickle({
             'raw': ld.get_history('AAPL.O', fields=['TRDPRC_1'], interval='daily', start=START, end=END, adjustments='unadjusted'),
@@ -96,7 +99,7 @@ def main():
                 if long_strike is None:
                     long_strike = math.floor(LONG_MONEYNESS * spot / LONG_GRID) * LONG_GRID
                 strike = math.ceil(SHORT_MONEYNESS * spot / SHORT_GRID) * SHORT_GRID
-                result['short'] = option(friday, strike, monday, friday)
+                result['short'] = option(expiry_day(monday), strike, monday, friday)
             if long_strike is None:
                 raise RuntimeError('No initial signal: cannot choose the long call')
             if long_ric is None:

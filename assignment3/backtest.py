@@ -7,6 +7,7 @@ import math
 import sys
 from pathlib import Path
 import pandas as pd
+from market_calendar import next_session, HOLIDAYS
 from config import START, END, INITIAL_CASH, FEE, TZ, SHORT_MONEYNESS, SHORT_GRID
 
 ROOT = Path(__file__).parent
@@ -48,7 +49,7 @@ def early_exit_reason(time, spot, contract, signal_quote, dividends):
     if finite(spot) and signal_quote and spot > contract['strike']:
         if signal_quote['mid'] - max(spot - contract['strike'], 0) <= .10:
             return 'Close early: ITM short has at most $0.10 of midpoint time value at 09:59'
-    next_business_day = (time + pd.offsets.BDay()).date().isoformat()
+    next_business_day = next_session(time).date().isoformat()
     for d in dividends:
         if d['announced'] < time.date().isoformat() and d['ex_date'] == next_business_day and d['ex_date'] <= contract['expiry']:
             return 'Close before an announced ex-dividend date'
@@ -91,7 +92,7 @@ def simulate(weeks, dividends, kind='pmcc', scenario='bid_ask', stress=False):
     for week in weeks:
         stock, long_bars = week['stock'], week['long']['bars']
         candidate = week['short']
-        decision = {'week': week['monday'], 'expiry': week['friday'],
+        decision = {'week': week['monday'], 'expiry': candidate['expiry'] if candidate else week['friday'],
             'strike': candidate['strike'] if candidate else None,
             'ric': candidate['ric'] if candidate else None,
             'status': 'Skipped', 'reason': 'No Monday 09:59 signal (holiday or missing bar)', 'exit': ''}
@@ -150,8 +151,8 @@ def simulate(weeks, dividends, kind='pmcc', scenario='bid_ask', stress=False):
                 decision['exit'] = 'Assignment stress; stop trading'
             if short_qty:
                 reason = early_exit_reason(time, signal_spot, short_contract, quote(short_contract['bars'], signal), dividends)
-                if time.dayofweek == 4 or time == end:
-                    reason = 'Scheduled Friday 10:00 buy-to-close before expiration'
+                if time.date().isoformat() == short_contract['expiry'] or time == end:
+                    reason = 'Scheduled expiry-day 10:00 buy-to-close before expiration'
                 if reason:
                     q = quote(short_contract['bars'], time)
                     if not q:
@@ -290,7 +291,7 @@ def load_inputs():
                     week[leg]['bars'] = subset[subset['role']==leg].set_index('time')[['BID','ASK','TRDPRC_1','ACVOL_UNS']]
             weeks.append(week)
         return weeks, info['dividends'], info['split_check']
-    weeks = [pd.read_pickle(p) for p in sorted((ROOT/'cache').glob('week-*.pkl'))]
+    weeks = [pd.read_pickle(p) for p in sorted((ROOT/'cache').glob('week-*.pkl')) if START <= p.stem[5:] <= END]
     split = pd.read_pickle(ROOT/'cache/split_check.pkl')
     pair = pd.concat([split['raw'].iloc[:,0],split['adjusted'].iloc[:,0]],axis=1).dropna()
     if pair.empty or not ((pair.iloc[:,0]-pair.iloc[:,1]).abs()<.00001).all():
@@ -313,6 +314,12 @@ def load_inputs():
 
 def main():
     weeks, dividends, split_check = load_inputs()
+    expected = {str(d.date()) for d in pd.bdate_range(START, END) if str(d.date()) not in HOLIDAYS}
+    observed = {str(t.date()) for w in weeks for t in w['stock'].index if t.strftime('%H:%M') == '10:00'}
+    if observed != expected:
+        raise ValueError(f'Stock session coverage mismatch: missing {sorted(expected-observed)}, extra {sorted(observed-expected)}')
+    if weeks[0]['long']['expiry'] <= END:
+        raise ValueError('Backing call must outlive the test window')
     outputs = {kind: simulate(weeks,dividends,kind) for kind in ['pmcc','covered_call','buy_hold','long_call']}
     for scenario in ['midpoint','adverse']:
         outputs[scenario] = simulate(weeks,dividends,'pmcc',scenario)

@@ -51,14 +51,14 @@ Refresh requests do not silently expand the fixed sample or optimize parameters.
 
 ## Strategy
 
-The fixed sample is July 13–October 2, 2026. All strategies start with $40,000.
-Buy one January 15, 2027 $240 call, then sell one weekly call at a time. The long
+The fixed sample is November 3, 2025–October 30, 2026. All strategies start with $40,000.
+Buy one January 15, 2027 call chosen by the moneyness rule, then sell one weekly call at a time. The long
 strike is a $5 grid at or below 75% of the initial 09:59 stock print. This is a
-six-month backing call, not a claim that a multi-year LEAPS contract was used.
+backing call expiring after the year-long test, not a claim that a multi-year LEAPS contract was used.
 Short strikes are the next $2.50 grid point at or above 103% of Monday's 09:59
 stock print. Orders occur at 10:00, using no later information.
 
-Buy back each short on Friday at 10:00. An earlier daily 09:59 ITM/time-value
+Buy back each short on its expiry day at 10:00. An earlier daily 09:59 ITM/time-value
 check or an announced ex-dividend event can trigger a 10:00 exit. Sell the long
 at the fixed terminal 10:00 timestamp. Full details are in SPECIFICATION.md.
 
@@ -76,12 +76,11 @@ Stockholders accrue dividends on ex-date and collect cash on payment date.
   use the same signals and contract choices.
 - The August 14 short call has no 10:00 bar. A universal maximum 60-second as-of
   quote rule was added before the first completed performance run. The 09:59
-  quote is used for that one simulated exit and its age is reported. This is
+  quote is used when an exact execution-time bar is absent and its age is reported. This is
   an execution assumption, not evidence that the old quote remained available.
 - Missing entries are skipped. Missing mandatory exits beyond that age limit
   stop the run. There is no future-price fill or interpolation.
-- Marks may carry prior quotes with age disclosed. The main run has no carried
-  end-of-observation marks. Bar quotes do not establish quote size or exact
+- Marks may carry prior quotes with age disclosed. The page reports carried end-of-observation marks. Bar quotes do not establish quote size or exact
   quote-change timestamps; the feed itself can retain unchanged quote values.
 - A raw-versus-CCH stock comparison screens for splits, not every possible
   adjusted option contract. RIC selection uses signal-time quote availability,
@@ -111,7 +110,7 @@ not a worst-case bound, and not proof of actual broker treatment. It excludes
 settlement delays, overnight stock financing, and forced liquidation.
 
 Other omissions: cash interest, taxes, stock transaction fees, market impact,
-partial fills, and quote-size constraints. Twelve weeks of AAPL are too short
+partial fills, and quote-size constraints. One year of AAPL is insufficient
 to establish persistent profitability. There is no annualized return or Sharpe
 ratio and no parameter search. Rules were chosen before calculating returns
 in this research session, not before the historical dates occurred.
@@ -126,3 +125,15 @@ in this research session, not before the historical dates occurred.
 Publish the page, shared navigation/CSS, and the files in this folder except
 `cache`, `__pycache__`, and `probe.py`. Saved `book.json` contains every benchmark
 and sensitivity blotter and ledger; the standalone CSV outputs show main PMCC.
+
+## One-year extension — November 3, 2026
+
+The sample now covers November 3, 2025–October 30, 2026 (52 complete weeks).
+Existing strike, funding and execution rules were retained without optimization.
+The exchange calendar handles closed Mondays, Thursday expirations when Friday
+is closed, and 13:00 closes on November 28 and December 24, 2025. Request times
+use America/New_York so winter and summer UTC offsets are correct. This is an
+extension of an in-sample study, not an independently selected out-of-sample test.
+The January 15, 2027 long expiry remains fixed and outlives the whole window.
+Its strike is recomputed from the new initial signal; dividend retrieval uses
+ex-date filtering to include events announced before the sample began.
