@@ -18,24 +18,24 @@ function body(id) { const b=el(id).tBodies[0]; b.replaceChildren(); return b; }
 
 function showResults() {
   const w=book.results.wheel.summary, b=book.results.buy_hold.summary;
-  say('wheel-conclusion',`The wheel earned ${money(w.pnl)} (${percent(w.return_pct)}), versus ${percent(b.return_pct)} for buy and hold. It reduced daily volatility and drawdown, but its Sharpe was ${number(w.sharpe)} versus ${number(b.sharpe)}. The hypothesis of an improved Sharpe was not supported in this sample.`);
+  say('wheel-conclusion',`The wheel earned ${money(w.pnl)} (${percent(w.return_pct)}), versus ${percent(b.return_pct)} for buy and hold. Its volatility and drawdown were lower, but its Sharpe was ${number(w.sharpe)} versus ${number(b.sharpe)}.`);
   const table=body('comparison');
   for (const key of ['wheel','buy_hold','covered_call']) {
     const s=book.results[key].summary;
     addRow(table,[names[key],money(s.pnl),percent(s.return_pct),percent(s.drawdown_pct),percent(s.volatility_pct),number(s.sharpe)]);
   }
-  say('wheel-attribution',`Wheel P&L: ${money(w.premium)} premiums − ${money(w.fees)} option fees ${w.stock_pnl<0 ? "−" : "+"} ${money(Math.abs(w.stock_pnl))} stock P&L + ${money(w.dividends)} dividends = ${money(w.pnl)}. Stock P&L uses assignment strikes and includes the ending shares at market value; collecting premium alone is not profit.`);
+  say('wheel-attribution',`Wheel profit: ${money(w.option_pnl)} in option receipts after fees ${w.stock_pnl<0 ? "−" : "+"} ${money(Math.abs(w.stock_pnl))} stock P&L + ${money(w.dividends)} dividends = ${money(w.pnl)}. Stock P&L includes ending shares at market value. Premium received is not profit.`);
   say('wheel-capital',`${w.option_entries} option entries; ${w.put_assignments} put assignments; ${w.call_assignments} call assignments; ${w.completed_cycles} completed wheel cycles. Shares were held at ${percent(w.share_days_pct)} of daily closes. Minimum free cash: ${money(w.min_free_cash)}. Ending NAV: ${money(w.final_nav)}, including 100 AAPL shares.`);
   const costs=body('sensitivity');
   for (const [key,label] of [['wheel','Bid/ask + fees (main)'],['midpoint','Midpoint + fees'],['adverse','Beyond bid/ask + fees'],['early_assignment','Early-assignment sensitivity']]) {
     const s=book.results[key].summary;
-    addRow(costs,[label,money(s.pnl),percent(s.return_pct),number(s.sharpe)]);
+    addRow(costs,[label,money(s.pnl),percent(s.return_pct)]);
   }
   const d=book.diagnostics;
   say('wheel-spreads',`At the ${d.entries} Wheel entries, the median quoted spread was ${money(d.median_spread)} per share and the largest was ${money(d.max_spread)}. Assuming midpoint sales would increase total P&L by ${money(d.midpoint_advantage)}. All three execution cases use the same contracts and entry dates.`);
   say('wheel-assignment','The main case assumes assignment only at expiry. A separate sensitivity assigns early at 10:00 when the 09:59 option is in the money with no more than $0.10 of midpoint time value, then waits until Monday to restart. It moves the June 12 put assignment to June 11, without changing final P&L here. This is one alternative timing rule, not an estimated probability or worst case.');
   say('scatter-stat',`${d.observed_points.toLocaleString()} matched observations; fitted trade = ${d.slope.toFixed(4)} × midpoint + ${d.intercept.toFixed(4)}; R² = ${d.r2.toFixed(5)}. ${percent(d.inside_spread_pct)} of reported trades fall inside the same bar's bid/ask.`);
-  say('wheel-interpretation',`Net option cash receipts of ${money(w.option_pnl)} were partly offset by ${money(-w.stock_pnl)} in stock losses. In two completed cycles, calls sold $20 below the preceding put assignment strike caused $2,000 of stock loss each. The final 100 shares recovered $713 above their $337.50 acquisition price, leaving net stock P&L of −$3,287. The wheel spent most daily closes without shares and missed much of AAPL's rise. Lower market exposure helped reduce volatility, but did not compensate for the return shortfall in the Sharpe comparison.`);
+  say('wheel-interpretation',`The thesis was that weekly premiums could reduce volatility and improve Sharpe relative to holding 100 shares plus idle cash. The wheel collected ${money(w.option_pnl)} after option fees, but lost ${money(-w.stock_pnl)} on the stock component. Two cycles sold shares $20 below their acquisition price, losing $2,000 each; the final shares had a $713 unrealized gain. Shares were held at only ${percent(w.share_days_pct)} of daily closes, missing much of AAPL's rise. Lower volatility did not offset the return shortfall: the improved-Sharpe thesis was not supported.`);
   say('wheel-source',`${book.source.provider}; ${book.source.start}–${book.source.end}; ${book.source.quote_rows.toLocaleString()} saved observations; ${w.observations} exchange sessions. Download completed ${book.source.completed_at.slice(0,19).replace('T',' ')} UTC.`);
   say('wheel-quality',`${book.source.split_check}. All 24 chosen entry weeks passed the quote rules; May 25 and September 7 were skipped for Monday holidays. ${w.aged_fills} entries used an older quote and ${w.stale_option_marks} daily closing option marks exceeded 60 seconds. Missing entries are skipped with a reason; missing expiry stock closes stop the run. Missing intraday marks may carry only an earlier quote, with its timestamp shown.`);
 }
@@ -43,7 +43,10 @@ function showResults() {
 function showPortfolio(index,requested) {
   const records=account().ledger, r=records[index];
   el('portfolio-record').value=String(index);
-  if (!requested) el('portfolio-time').value=r.time.slice(0,16);
+  if (!requested) {
+    el('portfolio-time').value=r.time.slice(0,16);
+    el('portfolio-side').value=r.phase==='before' ? 'before' : 'after';
+  }
   say('portfolio-status',`${names[el('wheel-account').value]} · requested ${time(requested || r.time)} · recorded state ${time(r.time)} (${r.phase}${r.group ? `, event ${r.group}` : ''}): ${r.reason}.`);
   const table=body('portfolio'), o=r.option;
   const contract=o ? `${o.ric} · ${money(o.strike)} · expires ${o.expiry}` : 'None';
@@ -99,7 +102,8 @@ function showRecords() {
     button.setAttribute('aria-label',`View portfolio after event ${r.group}, ${r.action} ${r.instrument}`);
     button.addEventListener('click',()=>{
       const index=a.ledger.findIndex(s=>s.group===r.group && s.phase==='after');
-      el('portfolio-side').value='after'; showPortfolio(index); el('portfolio-title').scrollIntoView({block:'start'});
+      el('portfolio-details').open=true;
+      showPortfolio(index); el('portfolio-title').scrollIntoView({block:'start'});
     });
     tr.cells[0].append(button);
   }
