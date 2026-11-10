@@ -1,4 +1,4 @@
-"""Save a Plotly figure specification with recent LSEG daily last prices."""
+"""Save a Plotly figure specification with recent LSEG daily candlesticks."""
 import argparse
 from datetime import date, timedelta
 import json
@@ -9,6 +9,9 @@ import lseg.data as ld
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+FIELDS = {"open": "OPEN_PRC", "high": "HIGH_1", "low": "LOW_1", "close": "TRDPRC_1"}
 
 
 def main():
@@ -28,21 +31,24 @@ def main():
         ld.session.set_default(session)
         traces = []
         for ric in rics:
-            frame = ld.get_history(universe=ric, fields=["TRDPRC_1"], interval="daily",
+            frame = ld.get_history(universe=ric, fields=list(FIELDS.values()), interval="daily",
                                    start=str(end - timedelta(days=89)), end=str(end))
-            if frame is None or frame.empty or frame.iloc[:, 0].dropna().empty:
+            if frame is None:
                 raise ValueError(f"No daily prices for {ric}")
-            prices = frame.iloc[:, 0]
-            traces.append(dict(type="scatter", mode="lines", name=ric,
-                               x=prices.index.strftime("%Y-%m-%d").tolist(),
-                               y=[None if missing else float(value)
-                                  for value, missing in zip(prices, prices.isna())]))
+            bars = frame.reindex(columns=list(FIELDS.values())).dropna().sort_index()
+            if bars.empty:
+                raise ValueError(f"No complete daily OHLC bars for {ric}")
+            traces.append({
+                "type": "candlestick", "name": ric,
+                "x": bars.index.strftime("%Y-%m-%d").tolist(),
+                **{key: bars[field].astype(float).tolist() for key, field in FIELDS.items()},
+            })
     finally:
         session.close()
     figure = {"data": traces, "layout": {
-        "hovermode": "x unified", "xaxis": {"type": "date"},
-        "yaxis": {"title": {"text": "Last price · instrument currency"}, "automargin": True},
-        "legend": {"orientation": "h"}, "margin": {"t": 20, "r": 15},
+        "xaxis": {"type": "date", "rangeslider": {"visible": False}},
+        "yaxis": {"title": {"text": "Price · instrument currency"}, "automargin": True},
+        "showlegend": False, "margin": {"t": 20, "r": 15},
     }}
     output = Path(__file__).with_name("prices.json")
     output.with_suffix(".tmp").write_text(json.dumps(figure, allow_nan=False) + "\n")
