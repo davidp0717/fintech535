@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FINTECH 535 · Nightly Orders</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
+<script src="assignment6/page.js" defer></script>
+<style>pre{padding:16px;background:#f1f4f6;overflow:auto}section{margin:28px 0}</style>
+</head><body><main>
+<nav class="assignment-tabs" aria-label="Assignments"><a href="index.html">Assignment 1: Options Data</a><a href="covered-call.html">Assignment 2: Covered Call</a><a href="poor-mans-covered-call.html">Assignment 3: PMCC</a><a href="wheel.html">Assignment 4: Wheel</a><a href="daily-prices.html">Assignment 5: Daily Prices</a><a href="nightly-orders.html" aria-current="page">Assignment 6: Nightly Orders</a></nav>
+<h1>Alphabet crossover orders</h1>
+<p class="subtitle">FINTECH 535 · Assignment 6</p>
+<p id="status" role="status">Loading the latest run…</p>
+<p id="dates" class="note"></p>
+<p id="signal"></p>
+<div id="signal-chart" class="backtest-chart" aria-label="Recent Alphabet daily closes"></div>
+<p class="note">Green dotted line shows the latest 5-day average. Orange dashed line shows the latest 20-day average.</p>
+<section><h2>The algorithm</h2>
+<p>Each evening, Python reads Alphabet daily closing prices from price_history.json, the course data feed committed to this repository. It uses the latest 21 completed exchange sessions to compare yesterday’s and today’s 5-day and 20-day simple moving averages.</p>
+<p>If the 5-day average was at or below the 20-day average and is now above it, the algorithm submits a limit order to buy one Alphabet Class A share for the next trading session. The limit equals the latest close, rounded to cents. Every other signal produces an empty order list.</p>
+<p>I chose this entry rule because its inputs and decisions are easy to inspect. The fast average responds to recent prices, while the slow average provides a longer comparison. Requiring a new crossover avoids a new entry every day the fast average stays above the slow average. This assignment demonstrates an entry algorithm; it has no exit rule or portfolio sizing model, and repeated crossover fills can accumulate shares. No return or profitability claim is made.</p>
+</section>
+<section><h2>Latest open orders</h2><pre id="orders">Loading…</pre>
+<p><a href="open_orders.json">Root order file</a> · <a href="mkt/open_orders.json">Sanji order file</a> · <a href="https://github.com/davidp0717/fintech535/actions/workflows/nightly-orders.yml">Nightly workflow and manual run</a></p>
+<p>The underlying is IB conid 208813720, matched to Alphabet in the course price_history.json. Orders use Sanji’s BUY action, underlying contract, positive share quantity, numeric limit, and explicit session date. A deterministic ID combines the strategy and target session so rerunning the same night reuses the order identity.</p>
+</section>
+<section><h2>From nightly run to published orders</h2>
+<p>GitHub Actions runs at 03:00 UTC each night, matching the instructor’s schedule. That is 10pm Eastern standard time and 11pm Eastern daylight time. GitHub can delay scheduled runs. A manual run is also available.</p>
+<p>The workflow checks out the repository, installs Python dependencies, reads the course price feed, and generates open_orders.json at the root. It writes the same list to mkt/open_orders.json to match Sanji’s current guide, commits the outputs, and requests a GitHub Pages build.</p>
+<p>An exchange calendar chooses the latest completed session and the next valid trading date, including holidays. The course price update must finish before this workflow runs. Prices for all 21 required sessions must be present and positive. A data failure clears the order lists, publishes a failure status, and marks the workflow failed. Orders carry a specific date so an old instruction cannot roll into a later session.</p>
+<p>Sanji’s guide currently says order resolution is still forthcoming. When supported, a limit buy fills at the open if the open is at or below the limit, or at the limit if the day’s low reaches it. Otherwise it stays unfilled. This script writes proposed orders and leaves positions and fills to Sanji. It does not check account cash or existing exposure.</p>
+<p><a href="https://github.com/davidp0717/fintech535/blob/main/assignment6/nightly.py">Python algorithm</a> · <a href="https://jakevestal.github.io/server-logic-533/order.html">Sanji order specification</a> · <a href="https://github.com/JakeVestal/server-logic-533/blob/main/.github/workflows/oi-plots.yml">Instructor’s nightly workflow</a></p>
+</section>
+<noscript>Enable JavaScript to see the latest signal and chart. The linked JSON order files are also available directly.</noscript>
+</main></body></html>
