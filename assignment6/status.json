@@ -1,17 +1,13 @@
 {
-  "generated_at": "2026-11-23T03:17:55.762785+00:00",
-  "as_of": "2026-11-20",
-  "for": "2026-11-23",
+  "generated_at": "2026-11-24T03:16:45.112759+00:00",
+  "as_of": "2026-11-23",
+  "for": "2026-11-24",
   "ric": "GOOGL.O",
   "conid": 208813720,
   "status": "no_order",
   "reason": "No new upward crossover on the latest completed session.",
   "orders": [],
   "series": [
-    {
-      "date": "2026-10-23",
-      "close": 317.28
-    },
     {
       "date": "2026-10-26",
       "close": 314.19
@@ -91,11 +87,15 @@
     {
       "date": "2026-11-20",
       "close": 264.0
+    },
+    {
+      "date": "2026-11-23",
+      "close": 279.53
     }
   ],
-  "close": 264.0,
-  "sma5": 274.616,
-  "sma20": 287.262,
-  "previous_sma5": 280.32,
-  "previous_sma20": 289.92600000000004
+  "close": 279.53,
+  "sma5": 274.27,
+  "sma20": 285.529,
+  "previous_sma5": 274.616,
+  "previous_sma20": 287.262
 }
