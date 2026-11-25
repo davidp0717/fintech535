@@ -3,8 +3,26 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FINTECH 535 · Final Project</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script>
+<script src="final-project/tracker.js" defer></script>
 </head><body><main>
 <nav class="assignment-tabs" aria-label="Assignments"><a href="index.html">Assignment 1: Options Data</a><a href="covered-call.html">Assignment 2: Covered Call</a><a href="poor-mans-covered-call.html">Assignment 3: PMCC</a><a href="wheel.html">Assignment 4: Wheel</a><a href="daily-prices.html">Assignment 5: Daily Prices</a><a href="nightly-orders.html">Assignment 6: Nightly Orders</a><a href="final-project.html" aria-current="page">Final Project</a></nav>
-<h1>Final Project</h1>
-<p>Coming soon.</p>
+<h1>Final Project · Gold and corn trend following</h1>
+<p><strong>Thesis.</strong> I believe three-month price trends in COMEX gold and CBOT corn persist into the following month often enough that following their direction can outperform an equal-weight long position after trading costs.</p>
+<section><h2>Tracking the signal</h2>
+<p>Each line shows the percentage change from 63 common trading sessions ago. Above zero favors a long position and below zero favors a short. The chart updates daily. The strategy uses the previous session’s reading at the close of the first common trading day each month, assigns half the portfolio’s notional exposure to each market, and holds that direction until the next review. An exact zero leaves that half in cash.</p>
+<p id="asof" role="status">Loading the latest observations…</p>
+<div id="trend" class="backtest-chart" aria-label="Gold and corn 63-session price changes"></div>
+<p id="positions"></p></section>
+<section><h2>Time horizon</h2><p>My initial research horizon is 12–24 months. I expect a repricing after a crop or monetary shock to last weeks to months. Each signal commits capital for about 21 trading days. If the sign persists, the same directional position carries into the next month. I will review the evidence after 12 new monthly decisions.</p></section>
+<section><h2>How large is the edge?</h2><p id="estimate"></p>
+<p>The comparison uses equal daily notional weights and close-to-close returns, with each new direction earning returns from the session after execution. I charge 5 basis points per one-way change in notional for spread, fees and slippage. Flipping one leg from +50% to −50% trades 100% of portfolio notional. The estimate is the annualized mean daily return difference versus a daily rebalanced 50/50 long basket, before financing and collateral interest.</p>
+<p>Yahoo Finance’s nearby futures series can jump when the underlying contract changes. The estimate omits explicit contract rolls and their costs. A small measured edge can disappear when tested on individual expiries.</p></section>
+<section><h2>When I would drop the thesis</h2><ul>
+<li>After 12 new monthly decisions, the strategy’s cumulative net return relative to the long basket is zero or negative.</li>
+<li>Across those 12 decisions, both gold and corn signals individually predict the sign of the following holding-period return at most half the time.</li>
+<li>A check using dated contracts and actual roll prices turns the gross advantage into a loss before signal trading costs.</li></ul></section>
+<section><h2>Why a trend might persist</h2><p>Gold and corn give the idea two different tests. A sustained rise in real interest rates raises the opportunity cost of holding gold, while a weaker dollar can support its dollar price. Corn supply responds slowly to drought because a lost harvest takes a growing season to replace. Those adjustments can extend a move across several monthly reviews. A sudden Fed reversal or a favorable crop forecast can erase it before the next review. During a tech selloff, demand for gold as a haven can compete with forced sales to raise cash, so the signal follows the observed price direction.</p>
+<p>The broader futures literature motivates the test. The 63-session window and these two markets are my project choices. <a href="https://doi.org/10.1016/j.jfineco.2011.11.003">Moskowitz, Ooi and Pedersen (2012)</a></p>
+<p>Daily prices: <a href="https://finance.yahoo.com/quote/GC%3DF/history/">COMEX gold (GC)</a> · <a href="https://finance.yahoo.com/quote/ZC%3DF/history/">CBOT corn (ZC)</a> · <a href="https://github.com/davidp0717/fintech535/actions/workflows/commodity-tracker.yml">Refresh history</a></p></section>
 </main></body></html>
