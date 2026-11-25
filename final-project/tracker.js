@@ -5,6 +5,10 @@ async function loadTracker() {
     if (!response.ok) throw new Error("Tracker unavailable");
     const d = await response.json();
     status.textContent = "Latest common close · " + d.as_of;
+    if (d.average_hold != null) {
+      document.getElementById("lifetime").textContent = "My estimate for an uninterrupted directional trade is " +
+        Math.round(d.average_hold) + " trading days, the sample average across completed gold and corn positions.";
+    }
     const directions = ["short", "flat", "long"];
     document.getElementById("positions").textContent = "Monthly positions set " + d.rebalance + " · " +
       Object.entries(d.position).map(([name, sign]) => name + " " + directions[sign + 1]).join(" · ");
