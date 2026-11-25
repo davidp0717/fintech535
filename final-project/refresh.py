@@ -1,4 +1,4 @@
-"""Update the gold/corn trend study using completed common daily closes."""
+"""Update the commodity trend study using completed common daily closes."""
 import json
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -8,7 +8,8 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-MARKETS = {"Gold": "GC=F", "Corn": "ZC=F"}
+MARKETS = {"Gold": "GC=F", "Copper": "HG=F", "WTI crude": "CL=F",
+           "Corn": "ZC=F", "Soybeans": "ZS=F", "Wheat": "ZW=F"}
 COST = 0.0005
 NY = ZoneInfo("America/New_York")
 
@@ -36,7 +37,7 @@ def main():
     rebalance = ~months.duplicated()
     decisions = momentum.shift(1).loc[rebalance].dropna()
     positions = decisions.apply(lambda col: (col > 0).astype(int) - (col < 0).astype(int))
-    weights = positions.reindex(prices.index).ffill().dropna() / 2
+    weights = positions.reindex(prices.index).ffill().dropna() / len(MARKETS)
     durations = []
     for market in MARKETS:
         held = weights[market]
@@ -50,7 +51,16 @@ def main():
     passive.iloc[0] = 0
     active = net - passive
     days = momentum.dropna().tail(252)
-    output = dict(as_of=str(prices.index[-1].date()), start=str(weights.index[0].date()),
+    # Approximate a one-month option expiry by the following rebalance.
+    entries = prices.loc[positions.index]
+    forward = entries.shift(-1).div(entries).sub(1)
+    option_rows = []
+    for market in MARKETS:
+        long_months = forward.loc[positions[market] == 1, market].dropna()
+        intrinsic = (long_months - 0.05).clip(lower=0)
+        option_rows.append(dict(market=market, months=len(intrinsic),
+                                hurdle=100 * (intrinsic.mean() + 0.001) if len(intrinsic) else None))
+    output = dict(options=option_rows, as_of=str(prices.index[-1].date()), start=str(weights.index[0].date()),
                   average_hold=sum(durations) / len(durations) if durations else None,
                   dates=days.index.strftime("%Y-%m-%d").tolist(),
                   momentum={m:(days[m]*100).round(2).tolist() for m in MARKETS},

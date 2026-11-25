@@ -7,7 +7,13 @@ async function loadTracker() {
     status.textContent = "Latest common close · " + d.as_of;
     if (d.average_hold != null) {
       document.getElementById("lifetime").textContent = "My estimate for an uninterrupted directional trade is " +
-        Math.round(d.average_hold) + " trading days, the sample average across completed gold and corn positions.";
+        Math.round(d.average_hold) + " trading days, the sample average across completed futures positions.";
+    }
+    for (const option of d.options) {
+      const row = document.getElementById("hurdles").insertRow();
+      for (const value of [option.market, option.months, option.hurdle == null ? "—" : option.hurdle.toFixed(2) + "%"]) {
+        row.insertCell().textContent = value;
+      }
     }
     const directions = ["short", "flat", "long"];
     document.getElementById("positions").textContent = "Monthly positions set " + d.rebalance + " · " +
