@@ -1,101 +1,11 @@
 {
-  "generated_at": "2026-11-24T03:16:45.112759+00:00",
-  "as_of": "2026-11-23",
-  "for": "2026-11-24",
+  "generated_at": "2026-11-25T03:16:21.953231+00:00",
+  "as_of": "2026-11-24",
+  "for": "2026-11-25",
   "ric": "GOOGL.O",
   "conid": 208813720,
-  "status": "no_order",
-  "reason": "No new upward crossover on the latest completed session.",
+  "status": "blocked",
+  "reason": "Refresh failed (ValueError). Orders cleared; inspect the workflow.",
   "orders": [],
-  "series": [
-    {
-      "date": "2026-10-26",
-      "close": 314.19
-    },
-    {
-      "date": "2026-10-27",
-      "close": 316.83
-    },
-    {
-      "date": "2026-10-28",
-      "close": 321.89
-    },
-    {
-      "date": "2026-10-29",
-      "close": 282.32
-    },
-    {
-      "date": "2026-10-30",
-      "close": 278.22
-    },
-    {
-      "date": "2026-11-02",
-      "close": 278.04
-    },
-    {
-      "date": "2026-11-03",
-      "close": 278.27
-    },
-    {
-      "date": "2026-11-04",
-      "close": 287.3
-    },
-    {
-      "date": "2026-11-05",
-      "close": 281.74
-    },
-    {
-      "date": "2026-11-06",
-      "close": 283.93
-    },
-    {
-      "date": "2026-11-09",
-      "close": 286.01
-    },
-    {
-      "date": "2026-11-10",
-      "close": 284.92
-    },
-    {
-      "date": "2026-11-11",
-      "close": 290.63
-    },
-    {
-      "date": "2026-11-12",
-      "close": 295.35
-    },
-    {
-      "date": "2026-11-13",
-      "close": 292.52
-    },
-    {
-      "date": "2026-11-16",
-      "close": 281.26
-    },
-    {
-      "date": "2026-11-17",
-      "close": 277.6
-    },
-    {
-      "date": "2026-11-18",
-      "close": 279.2
-    },
-    {
-      "date": "2026-11-19",
-      "close": 271.02
-    },
-    {
-      "date": "2026-11-20",
-      "close": 264.0
-    },
-    {
-      "date": "2026-11-23",
-      "close": 279.53
-    }
-  ],
-  "close": 279.53,
-  "sma5": 274.27,
-  "sma20": 285.529,
-  "previous_sma5": 274.616,
-  "previous_sma20": 287.262
+  "series": []
 }
